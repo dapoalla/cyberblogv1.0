@@ -1,0 +1,17 @@
+# Dependencies
+vendor/
+
+# Local uploads and generated assets
+uploads/
+
+# IDE/editor configs
+.vscode/
+.idea/
+
+# Local secrets
+client_secret*.json
+.env
+
+# OS files
+Thumbs.db
+*.log

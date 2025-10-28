@@ -13,6 +13,13 @@ return [
       'qr' => 'assets/images/buymeacoffee-qr.png',
       'warning' => 'Only send Tether USD (BEP20) assets to this address.',
     ],
+    'SMART_WALLET_EVM' => [
+      'label' => 'Smart Wallet — ETH, Arbitrum, BNB Chain, Polygon',
+      'address' => '0xa4C9677FDBaC8F1eAB0234585d98ED0059b9d5aD',
+      'qr' => '',
+      'networks' => ['Ethereum', 'Arbitrum', 'BNB Chain', 'Polygon'],
+      'warning' => 'Send assets on supported EVM networks only (same address across these).',
+    ],
     // Optional networks — add your addresses to enable
     'USDT_TRC20' => [
       'label' => 'Tether (USDT) — TRON (TRC20)',

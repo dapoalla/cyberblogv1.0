@@ -72,12 +72,23 @@ include __DIR__ . '/../includes/template_header.php';
       <div class="mt-4 grid md:grid-cols-2 gap-6 items-start donation-panel" data-key="<?php echo e($key); ?>" style="<?php echo $isFirst ? '' : 'display:none'; ?>">
         <div class="bg-neutral-900 border border-neutral-800 rounded p-4">
           <div class="text-sm text-neutral-400 mb-2">Scan to Copy Address</div>
-          <?php $qr = trim($d['qr'] ?? ''); ?>
-          <img src="<?php echo $qr ? base_url($qr) : ''; ?>" alt="Donation QR" class="w-56 h-56 object-contain bg-neutral-800 rounded" onerror="this.style.display='none';document.getElementById('qrFallback_<?php echo e($key); ?>').classList.remove('hidden');" />
-          <div id="qrFallback_<?php echo e($key); ?>" class="<?php echo $qr ? 'hidden' : ''; ?> text-xs text-neutral-400 mt-2">QR image not found. Add one at <code><?php echo e($qr ?: 'assets/images/buymeacoffee-qr.png'); ?></code>.</div>
+          <?php 
+            $qr = trim($d['qr'] ?? ''); 
+            $addr = trim($d['address'] ?? '');
+            if (!$qr && $addr) { 
+              $qr = 'https://api.qrserver.com/v1/create-qr-code/?size=224x224&data=' . urlencode($addr);
+            }
+          ?>
+          <?php if ($qr): ?>
+            <img src="<?php echo e($qr); ?>" alt="Donation QR" class="w-56 h-56 object-contain bg-neutral-800 rounded" onerror="this.style.display='none';document.getElementById('qrFallback_<?php echo e($key); ?>').classList.remove('hidden');" />
+          <?php endif; ?>
+          <div id="qrFallback_<?php echo e($key); ?>" class="<?php echo $qr ? 'hidden' : ''; ?> text-xs text-neutral-400 mt-2">QR image unavailable. The wallet address is shown below for manual copy.</div>
         </div>
         <div class="bg-neutral-900 border border-neutral-800 rounded p-4">
           <div class="text-sm text-neutral-400">Method:&nbsp; <span class="text-neutral-200"><?php echo e($d['label'] ?? $key); ?></span></div>
+          <?php if (!empty($d['networks']) && is_array($d['networks'])): ?>
+            <div class="text-xs text-neutral-400 mt-1">Networks: <span class="text-neutral-200"><?php echo e(implode(', ', $d['networks'])); ?></span></div>
+          <?php endif; ?>
           <div class="mt-3 text-sm font-semibold">Wallet Address</div>
           <div class="mt-2 flex items-center gap-2">
             <code class="text-xs break-all bg-neutral-800 px-2 py-1 rounded" id="addr_<?php echo e($key); ?>"><?php echo e($d['address']); ?></code>

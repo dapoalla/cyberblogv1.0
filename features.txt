@@ -1,0 +1,79 @@
+
+
+## 🧭 Overview
+
+CyberBlog (Integrated Blog + Management System) provides centralized management for blog content, user activity, and system configuration — all presented in a dark-themed, minimalist interface. It’s designed for clarity, speed, and ease of use.
+
+---
+
+## 📝 Core Features
+
+### 1) Content Management
+
+Organized tools for full blog content control:
+
+* Manage Posts — create, edit, publish, or delete blog posts
+* Categories — define and organize post categories
+* Tags — manage tagging for SEO and content grouping
+
+### 2) User Engagement
+
+A dedicated section to track and interact with readers:
+
+* Comments — review and moderate user feedback on posts
+* Newsletter — manage mailing lists and subscriber updates
+* Contact Messages — view messages submitted via the contact form
+* User Management — add, remove, or modify registered users
+* User Suggestions — collect and review user-submitted ideas or feature requests
+
+### 3) System Tools
+
+Administrative and analytical tools for backend control:
+
+* Analytics — view traffic or post-performance metrics (extensible)
+* Editorial Team — manage authors, editors, and content contributors
+* Settings — configure site preferences and integrations
+* Logout — securely sign out of the admin session
+* Support — link to About page donation section
+
+---
+
+## 👥 Dashboard Summary Widgets
+
+At the top, a snapshot of key site metrics:
+
+* Posts / Published — total and published counts
+* Comments — pending or total
+* Subscribers — newsletter subscriber count
+* New Contacts — recent contact submissions
+* Users — registered accounts
+* Suggestions — user feedback count
+* Categories & Tags — classification totals
+
+---
+
+## 💡 Design Highlights
+
+* Dark Theme UI — reduces eye strain, modern feel
+* Flat Button Layout — clean, scannable button groups
+* Segmented Sections — logical grouping for quick navigation
+* Responsive Grid Cards — compact, uniform summary metrics
+* Footer Info Block — blog description, quick links, newsletter form
+
+---
+
+## 🛠️ Setup & Database Options
+* Guided Setup Wizard — environment checks, config writer, schema initialization
+* Initialize database — idempotent table creation
+* Wipe and reinitialize `cms_*` tables — destructive reset with confirmation
+* Use existing database — skip schema changes
+
+## ☕ Donations
+The About page supports multi-network donation tabs. Configure addresses in `config.php` under `donations`.
+
+## 🖼️ Admin Screenshot
+Add your screenshot at `assets/images/admin-dashboard.png` so it renders in the README.
+
+
+
+

@@ -25,6 +25,7 @@
   <?php
     $adsHeader = '';
     if (extension_loaded('mysqli') && !empty($config['db']['user']) && !empty($config['db']['name'])) {
+      mysqli_report(MYSQLI_REPORT_OFF);
       $dbh = @mysqli_init();
       if ($dbh) {
         @mysqli_real_connect($dbh, $config['db']['host'] ?? 'localhost', $config['db']['user'] ?? '', $config['db']['pass'] ?? '', $config['db']['name'] ?? '', $config['db']['port'] ?? 3306);
@@ -46,6 +47,7 @@
     <?php
       $logo = $config['logo_url'] ?? '';
       if (empty($logo) && extension_loaded('mysqli') && !empty($config['db']['user']) && !empty($config['db']['name'])) {
+        mysqli_report(MYSQLI_REPORT_OFF);
         $dbh = @mysqli_init();
         if ($dbh) {
           @mysqli_real_connect($dbh, $config['db']['host'] ?? 'localhost', $config['db']['user'] ?? '', $config['db']['pass'] ?? '', $config['db']['name'] ?? '', $config['db']['port'] ?? 3306);

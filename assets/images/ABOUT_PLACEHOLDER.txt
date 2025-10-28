@@ -1,0 +1,2 @@
+Add a QR code image named `buymeacoffee-qr.png` here to show on the About page.
+Recommended size: ~512x512 PNG.

@@ -113,7 +113,7 @@ PHP;
         </div>
       <?php endif; ?>
       <div class="mt-6">
-        <a href="<?php echo base_url('setup/index.php?step=2'); ?>" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded">Continue</a>
+        <a href="?step=2" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded">Continue</a>
       </div>
     </div>
   <?php elseif ($step === 2): ?>
@@ -143,7 +143,7 @@ PHP;
           if (!$saved) { $error = 'Failed to write config.php'; $ok=false; }
         }
         if ($ok) {
-          header('Location: '.base_url('setup/index.php?step=3'));
+          header('Location: ?step=3');
           exit;
         }
       }
@@ -200,29 +200,84 @@ PHP;
     </form>
   <?php elseif ($step === 3): ?>
     <?php
+      function run_schema($conn): array {
+        $sql = file_get_contents(__DIR__.'/schema.sql');
+        if ($sql === false) return [false,'Missing schema.sql'];
+        $conn->multi_query($sql);
+        while ($conn->more_results() && $conn->next_result()) { /* flush results */ }
+        return [true,'Database initialized successfully.'];
+      }
+      function wipe_schema($conn): array {
+        $drops = [
+          'SET FOREIGN_KEY_CHECKS=0;',
+          'DROP TABLE IF EXISTS cms_post_tags;',
+          'DROP TABLE IF EXISTS cms_comments;',
+          'DROP TABLE IF EXISTS cms_user_suggestions;',
+          'DROP TABLE IF EXISTS cms_posts;',
+          'DROP TABLE IF EXISTS cms_categories;',
+          'DROP TABLE IF EXISTS cms_tags;',
+          'DROP TABLE IF EXISTS cms_contacts;',
+          'DROP TABLE IF EXISTS cms_newsletter;',
+          'DROP TABLE IF EXISTS cms_oauth_users;',
+          'DROP TABLE IF EXISTS cms_admin_users;',
+          'DROP TABLE IF EXISTS cms_settings;',
+          'SET FOREIGN_KEY_CHECKS=1;'
+        ];
+        foreach ($drops as $q) { $conn->query($q); }
+        return [true,'Existing tables dropped.'];
+      }
+
       $cfg = require __DIR__ . '/../config.php';
       list($ok,$conn) = try_db_connect($cfg['db']['host'],$cfg['db']['user'],$cfg['db']['pass'],$cfg['db']['name'],$cfg['db']['port']);
+      $statusMsg = '';
       $error = '';
-      $done = false;
-      if (!$ok) { $error = $conn; }
-      else {
-        $sql = file_get_contents(__DIR__.'/schema.sql');
-        if ($sql === false) $error = 'Missing schema.sql';
-        else {
-          $conn->multi_query($sql);
-          while ($conn->more_results() && $conn->next_result()) { /* flush results */ }
-          $done = true;
+
+      if (!$ok) {
+        $error = is_string($conn)?$conn:'Database connection failed';
+      } else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $action = $_POST['db_action'] ?? 'init';
+        if ($action === 'skip') {
+          header('Location: ?step=4');
+          exit;
+        }
+        if ($action === 'wipe') {
+          list($wOk,$wMsg) = wipe_schema($conn);
+          if ($wOk) { $statusMsg = $wMsg; } else { $error = $wMsg; }
+        }
+        if (!$error) {
+          list($sOk,$sMsg) = run_schema($conn);
+          if ($sOk) { $statusMsg = trim($statusMsg.' '.$sMsg); } else { $error = $sMsg; }
         }
       }
-      if ($done) {
-        echo '<div class="bg-green-900/30 border border-green-700 text-green-400 px-4 py-3 rounded">Database initialized successfully.</div>';
-      } else {
-        echo '<div class="bg-rose-900/30 border border-rose-700 text-rose-400 px-4 py-3 rounded">'.e($error).'</div>';
-      }
     ?>
-    <div class="mt-6">
-      <a href="<?php echo base_url('setup/index.php?step=4'); ?>" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded">Continue</a>
-    </div>
+    <form method="POST" class="bg-neutral-900 border border-neutral-800 rounded p-6 space-y-4">
+      <h2 class="text-xl font-semibold">Database Initialization</h2>
+      <?php if (!empty($statusMsg)): ?><div class="bg-green-900/30 border border-green-700 text-green-400 px-4 py-3 rounded"><?php echo e($statusMsg); ?></div><?php endif; ?>
+      <?php if (!empty($error)): ?><div class="bg-rose-900/30 border border-rose-700 text-rose-400 px-4 py-3 rounded"><?php echo e($error); ?></div><?php endif; ?>
+
+      <div class="space-y-2 text-sm text-neutral-300">
+        <label class="flex items-start gap-2">
+          <input type="radio" name="db_action" value="init" class="mt-0.5" checked>
+          <span>Initialize database (create tables if missing). Safe and idempotent.</span>
+        </label>
+        <label class="flex items-start gap-2">
+          <input type="radio" name="db_action" value="wipe" class="mt-0.5">
+          <span>
+            Wipe and reinitialize (drops existing <code>cms_*</code> tables, then recreates).
+            <span class="text-amber-400">This is destructive. Backup first.</span>
+          </span>
+        </label>
+        <label class="flex items-start gap-2">
+          <input type="radio" name="db_action" value="skip" class="mt-0.5">
+          <span>Use existing database (skip schema changes).</span>
+        </label>
+      </div>
+
+      <div class="flex items-center gap-3 mt-4">
+        <button onclick="if(document.querySelector('input[name=\'db_action\']:checked').value==='wipe'&&!confirm('This will DROP existing cms_* tables. Continue?')){event.preventDefault();}" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded">Continue</button>
+        <a href="?step=4" class="text-sky-400">Skip and create admin</a>
+      </div>
+    </form>
   <?php elseif ($step === 4): ?>
     <?php
       $msg = '';
@@ -262,15 +317,15 @@ PHP;
       <div class="mt-2"><button class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded">Create Admin</button></div>
     </form>
     <div class="mt-6">
-      <a href="<?php echo base_url('setup/index.php?step=5'); ?>" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded">Finish</a>
+      <a href="?step=5" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded">Finish</a>
     </div>
   <?php elseif ($step === 5): ?>
     <div class="bg-neutral-900 border border-neutral-800 rounded p-6">
       <h2 class="text-xl font-semibold">All Set!</h2>
       <p class="text-neutral-300 mt-2">Your blog is configured. You can now log in to the admin dashboard or visit the homepage.</p>
       <div class="mt-4 flex gap-3">
-        <a class="bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded" href="<?php echo base_url('admin/login.php'); ?>">Admin Login</a>
-        <a class="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded" href="<?php echo base_url('public/index.php'); ?>">Go to Blog</a>
+        <a class="bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded" href="../admin/login.php">Admin Login</a>
+        <a class="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded" href="../public/index.php">Go to Blog</a>
       </div>
     </div>
   <?php endif; ?>

@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
-  <link rel="stylesheet" href="<?php echo base_url('assets/css/styles.css'); ?>" />
+  <link rel="stylesheet" href="../assets/css/styles.css" />
   <style>html,body{font-family:'Poppins',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}</style>
   <script>
     (function() {
@@ -25,14 +25,14 @@
 <header class="sticky top-0 z-50 bg-neutral-950/80 backdrop-blur border-b border-neutral-800">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
     <?php $logo = $config['logo_url'] ?? ''; ?>
-    <a href="<?php echo base_url('setup/index.php'); ?>" class="flex items-center gap-3">
+    <a href="<?php echo htmlspecialchars($_SERVER['SCRIPT_NAME']); ?>" class="flex items-center gap-3">
       <?php if (!empty($logo)): ?>
         <img src="<?php echo e($logo); ?>" alt="<?php echo e($config['site_name'] ?? 'Blog'); ?>" class="h-8 w-auto">
       <?php endif; ?>
       <span class="text-xl font-extrabold tracking-tight">Setup Wizard</span>
     </a>
     <nav class="hidden md:flex items-center gap-6 text-sm">
-      <a href="<?php echo base_url('public/index.php'); ?>" class="hover:text-sky-400">Blog Home</a>
+      <a href="../public/index.php" class="hover:text-sky-400">Blog Home</a>
       <button id="themeToggle" class="hover:text-sky-400" title="Toggle theme">🌓</button>
     </nav>
   </div>

@@ -56,6 +56,7 @@ if ($res=$mysqli->query("SELECT COUNT(*) c FROM cms_user_suggestions WHERE statu
     <a class="bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded" href="analytics.php">Analytics</a>
     <a class="bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded" href="manage_editorial.php">Editorial Team</a>
     <a class="bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded" href="settings.php">Settings</a>
+    <a class="bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded" href="<?php echo base_url('public/about.php#support'); ?>">Support</a>
     <a class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded" href="logout.php">Logout</a>
   </div>
 </div>

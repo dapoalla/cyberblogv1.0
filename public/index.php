@@ -1,8 +1,18 @@
 <?php
 require __DIR__ . '/../includes/db.php';
 require __DIR__ . '/../includes/helpers.php';
+// Resolve site name and dynamic caption from settings
+$appCfg = require __DIR__ . '/../config.php';
+$siteName = $appCfg['site_name'] ?? 'CyberBlog';
+$heroCaption = '';
+if ($res = $mysqli->query("SELECT site_name, footer_caption FROM cms_settings WHERE id=1")) {
+  if ($row = $res->fetch_assoc()) {
+    if (!empty($row['site_name'])) $siteName = $row['site_name'];
+    if (!empty($row['footer_caption'])) $heroCaption = $row['footer_caption'];
+  }
+}
 $pageTitle = 'Home';
-$metaDescription = 'Latest posts from Cyberrose Blog';
+$metaDescription = 'Latest posts from ' . $siteName;
 include __DIR__ . '/../includes/template_header.php';
 
 // Pagination
@@ -45,8 +55,10 @@ $hasMore = ($offset + $perPage) < $totalCount;
 <div class="flex flex-col lg:flex-row gap-8">
   <!-- Main Content -->
   <div class="flex-1">
-    <h1 class="text-3xl font-bold">Cyberrose Blog</h1>
-    <p class="text-neutral-300 mt-2">We have a wealth of proven expertise in security integration, networking, automation, and cybersecurity. At CyberRose, we deliver real human reviews and genuine blogs — authentic human insights</p>
+    <h1 class="text-3xl font-bold"><?php echo e($siteName); ?></h1>
+    <?php if (!empty($heroCaption)): ?>
+      <p class="text-neutral-300 mt-2"><?php echo e($heroCaption); ?></p>
+    <?php endif; ?>
     
     <?php if (isset($_GET['newsletter'])): ?>
       <?php if ($_GET['newsletter'] === 'success'): ?>

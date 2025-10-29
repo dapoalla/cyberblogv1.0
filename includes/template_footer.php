@@ -1,15 +1,52 @@
 </main>
+<?php
+  $config = require __DIR__ . '/../config.php';
+  $footerCaption = 'We have a wealth of proven expertise in security integration, networking, automation, and cybersecurity. At CyberBlog, we deliver real human reviews and genuine blogs — authentic human insights';
+  $siteName = $config['site_name'] ?? 'CyberBlog';
+  if (extension_loaded('mysqli') && !empty($config['db']['user']) && !empty($config['db']['name'])) {
+    mysqli_report(MYSQLI_REPORT_OFF);
+    $dbh = @mysqli_init();
+    if ($dbh) {
+      @mysqli_real_connect($dbh, $config['db']['host'] ?? 'localhost', $config['db']['user'] ?? '', $config['db']['pass'] ?? '', $config['db']['name'] ?? '', $config['db']['port'] ?? 3306);
+      if (!$dbh->connect_errno) {
+        $dbh->set_charset('utf8mb4');
+        if ($res = $dbh->query("SELECT site_name, footer_caption FROM cms_settings WHERE id=1")) {
+          $row = $res->fetch_assoc();
+          if (!empty($row['site_name'])) $siteName = $row['site_name'];
+          if (!empty($row['footer_caption'])) $footerCaption = $row['footer_caption'];
+        }
+      }
+    }
+  }
+?>
 <footer class="border-t border-neutral-800 mt-12">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="grid md:grid-cols-3 gap-8 text-sm">
       <div>
-        <h3 class="font-semibold text-neutral-100 mb-3">Cyberrose Blog</h3>
-        <p class="text-neutral-400">We have a wealth of proven expertise in security integration, networking, automation, and cybersecurity. At CyberRose, we deliver real human reviews and genuine blogs — authentic human insights</p>
+        <h3 class="font-semibold text-neutral-100 mb-3"><?php echo e($siteName); ?></h3>
+        <p class="text-neutral-400"><?php echo e($footerCaption); ?></p>
       </div>
       <div>
         <h3 class="font-semibold text-neutral-100 mb-3">Quick Links</h3>
         <ul class="space-y-2 text-neutral-400">
-          <li><a href="<?php echo base_url('public/about.php'); ?>" class="hover:text-sky-400">About</a></li>
+          <?php
+            // Read about toggle
+            $aboutEnabled = 1;
+            if (extension_loaded('mysqli') && !empty($config['db']['user']) && !empty($config['db']['name'])) {
+              mysqli_report(MYSQLI_REPORT_OFF);
+              $dbh = @mysqli_init();
+              if ($dbh) {
+                @mysqli_real_connect($dbh, $config['db']['host'] ?? 'localhost', $config['db']['user'] ?? '', $config['db']['pass'] ?? '', $config['db']['name'] ?? '', $config['db']['port'] ?? 3306);
+                if (!$dbh->connect_errno) {
+                  if ($res = $dbh->query("SELECT about_enabled FROM cms_settings WHERE id=1")) {
+                    $row = $res->fetch_assoc();
+                    $aboutEnabled = isset($row['about_enabled']) ? (int)$row['about_enabled'] : 1;
+                  }
+                }
+              }
+            }
+          ?>
+          <?php if (!empty($aboutEnabled)): ?><li><a href="<?php echo base_url('public/about.php'); ?>" class="hover:text-sky-400">About</a></li><?php endif; ?>
           <li><a href="<?php echo base_url('public/contact.php'); ?>" class="hover:text-sky-400">Contact</a></li>
           <li><a href="<?php echo base_url('public/sitemap_html.php'); ?>" class="hover:text-sky-400">Sitemap</a></li>
           <li><a href="<?php echo base_url('public/suggest_topic.php'); ?>" class="hover:text-sky-400">Suggest Topic</a></li>
@@ -26,7 +63,7 @@
       </div>
     </div>
     <div class="mt-8 pt-8 border-t border-neutral-800 text-center text-neutral-400 text-sm">
-      © <span id="year"></span> CyberRose Systems. All rights reserved.
+      © <span id="year"></span> <?php echo e($siteName); ?>. All rights reserved.
     </div>
   </div>
 </footer>

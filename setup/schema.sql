@@ -92,7 +92,12 @@ CREATE TABLE IF NOT EXISTS cms_settings (
   id INT PRIMARY KEY,
   ads_header_code TEXT NULL,
   ads_inpost_code TEXT NULL,
-  ads_midcontent_code TEXT NULL
+  ads_midcontent_code TEXT NULL,
+  logo_url VARCHAR(512) NULL,
+  site_name VARCHAR(255) NULL,
+  footer_caption TEXT NULL,
+  about_enabled TINYINT(1) DEFAULT 1,
+  github_url VARCHAR(512) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT INTO cms_settings (id) VALUES (1) ON DUPLICATE KEY UPDATE id=id;
 

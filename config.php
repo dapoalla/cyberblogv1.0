@@ -1,6 +1,6 @@
 <?php
 return [
-  'site_name' => 'Cyberrose Blog',
+  'site_name' => 'CyberBlog',
   'base_url' => '',
   // Centralized version string for display across the app
   'version' => 'v1.0',
@@ -42,9 +42,9 @@ return [
   ],
   'db' => [
     'host' => 'localhost',
-    'name' => '07',
-    'user' => '07',
-    'pass' => '07',
+    'name' => '',
+    'user' => '',
+    'pass' => '',
     'port' => 3306,
   ],
   'security' => [

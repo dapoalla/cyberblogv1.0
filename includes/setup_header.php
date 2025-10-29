@@ -1,11 +1,11 @@
-<?php $config = file_exists(__DIR__ . '/../config.php') ? require __DIR__ . '/../config.php' : ['site_name'=>'Cyberrose Blog','base_url'=>'']; ?>
+<?php $config = file_exists(__DIR__ . '/../config.php') ? require __DIR__ . '/../config.php' : ['site_name'=>'CyberBlog','base_url'=>'']; ?>
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title><?php echo isset($pageTitle)? e($pageTitle).' | ' : ''; ?><?php echo e($config['site_name'] ?? 'Cyberrose Blog'); ?></title>
-  <meta name="description" content="<?php echo isset($metaDescription)? e($metaDescription) : 'Cyberrose Blog Setup'; ?>" />
+  <title><?php echo isset($pageTitle)? e($pageTitle).' | ' : ''; ?><?php echo e($config['site_name'] ?? 'CyberBlog'); ?></title>
+  <meta name="description" content="<?php echo isset($metaDescription)? e($metaDescription) : 'CyberBlog Setup'; ?>" />
   <link rel="preconnect" href="https://cdn.tailwindcss.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

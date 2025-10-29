@@ -4,7 +4,7 @@ function base_url(string $path = ''): string {
   $base = $config['base_url'] ?? '';
   if ($base && $base[0] !== '/') $base = '/'.$base;
   $path = ltrim($path, '/');
-  return ($base ? $base.'/' : '/').$path;
+  return ($base ? rtrim($base,'/').'/' : '/').$path;
 }
 function e($s) { return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 function slugify(string $t): string {

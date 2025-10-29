@@ -4,7 +4,7 @@ require __DIR__ . '/../includes/helpers.php';
 // Simple step router
 $step = isset($_GET['step']) ? (int)$_GET['step'] : 1;
 $pageTitle = 'Setup Wizard';
-$metaDescription = 'Install and configure Cyberrose Blog';
+$metaDescription = 'Install and configure CyberBlog';
 include __DIR__ . '/../includes/setup_header.php';
 
 function env_check(): array {
@@ -153,7 +153,7 @@ PHP;
       <?php if (!empty($error)): ?><div class="bg-rose-900/30 border border-rose-700 text-rose-400 px-4 py-3 rounded"><?php echo e($error); ?></div><?php endif; ?>
       <div>
         <label class="block text-sm mb-1">Site Name</label>
-        <input name="site_name" value="Cyberrose Blog" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2" />
+        <input name="site_name" value="CyberBlog" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2" />
       </div>
       <div>
         <label class="block text-sm mb-1">Base URL (optional)</label>
@@ -248,6 +248,15 @@ PHP;
           list($sOk,$sMsg) = run_schema($conn);
           if ($sOk) { $statusMsg = trim($statusMsg.' '.$sMsg); } else { $error = $sMsg; }
         }
+        // Capture site settings during setup
+        $site_name = trim($_POST['site_name'] ?? '');
+        $footer_caption = trim($_POST['footer_caption'] ?? '');
+        $github_url = trim($_POST['github_url'] ?? '');
+        $about_enabled = isset($_POST['about_enabled']) ? 1 : 0;
+        if ($site_name || $footer_caption || $github_url) {
+          $stmt = $conn->prepare("UPDATE cms_settings SET site_name=?, footer_caption=?, about_enabled=?, github_url=? WHERE id=1");
+          if ($stmt) { $stmt->bind_param('ssis',$site_name,$footer_caption,$about_enabled,$github_url); $stmt->execute(); $stmt->close(); }
+        }
       }
     ?>
     <form method="POST" class="bg-neutral-900 border border-neutral-800 rounded p-6 space-y-4">
@@ -276,6 +285,26 @@ PHP;
       <div class="flex items-center gap-3 mt-4">
         <button onclick="if(document.querySelector('input[name=\'db_action\']:checked').value==='wipe'&&!confirm('This will DROP existing cms_* tables. Continue?')){event.preventDefault();}" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded">Continue</button>
         <a href="?step=4" class="text-sky-400">Skip and create admin</a>
+      </div>
+      <hr class="my-6 border-neutral-800">
+      <h3 class="text-lg font-semibold">Site Settings</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm mb-1">Site Name</label>
+          <input name="site_name" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2" placeholder="CyberBlog" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">GitHub URL (optional)</label>
+          <input name="github_url" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2" placeholder="https://github.com/your/repo" />
+        </div>
+      </div>
+      <div class="mt-4">
+        <label class="block text-sm mb-1">Footer Caption</label>
+        <textarea name="footer_caption" rows="3" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2" placeholder="We have a wealth of proven expertise..."></textarea>
+      </div>
+      <div class="mt-2 flex items-center gap-2">
+        <input type="checkbox" id="about_enabled" name="about_enabled" checked>
+        <label for="about_enabled" class="text-sm">Enable About page</label>
       </div>
     </form>
   <?php elseif ($step === 4): ?>

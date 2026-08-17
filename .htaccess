@@ -1,0 +1,15 @@
+RewriteEngine On
+# Pretty URLs
+RewriteRule ^post/([A-Za-z0-9_\-]+)/?$ public/post.php?slug=$1 [L,QSA]
+RewriteRule ^category/([A-Za-z0-9_\-]+)/?$ public/category.php?slug=$1 [L,QSA]
+# Sitemap
+RewriteRule ^sitemap\.xml$ public/sitemap.php [L,QSA]
+# Home
+DirectoryIndex public/index.php
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php81” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php81 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

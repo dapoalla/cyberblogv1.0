@@ -1,0 +1,13 @@
+# Secrets - never commit
+config.local.php
+.env
+
+# Node build tooling
+node_modules/
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+
+# Stray local backup, not part of the app
+well-known (1).zip

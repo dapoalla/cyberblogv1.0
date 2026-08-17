@@ -5,7 +5,13 @@ require_once __DIR__ . '/../includes/helpers.php';
 header('Content-Type: application/rss+xml; charset=utf-8');
 
 $config = require __DIR__ . '/../config.php';
-$siteName = $config['site_name'] ?? 'CyberBlog';
+$siteName = $config['site_name'] ?? 'Blog';
+$siteTagline = '';
+if ($res = $mysqli->query("SELECT site_name, site_tagline FROM cms_settings WHERE id=1")) {
+  $row = $res->fetch_assoc() ?: [];
+  if (!empty($row['site_name'])) $siteName = $row['site_name'];
+  $siteTagline = $row['site_tagline'] ?? '';
+}
 $siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
 $blogUrl = $siteUrl . base_url('public/index.php');
 
@@ -25,7 +31,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
   <channel>
     <title><?php echo htmlspecialchars($siteName); ?></title>
     <link><?php echo htmlspecialchars($blogUrl); ?></link>
-    <description>More than 12 years of proven expertise in security integration, networking, automation, and cybersecurity. At CyberBlog, we deliver real human reviews and genuine blogs — authentic human insights</description>
+    <description><?php echo htmlspecialchars($siteTagline ?: $siteName); ?></description>
     <language>en-us</language>
     <lastBuildDate><?php echo date('r'); ?></lastBuildDate>
     <atom:link href="<?php echo htmlspecialchars($siteUrl . base_url('public/rss.php')); ?>" rel="self" type="application/rss+xml" />

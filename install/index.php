@@ -128,6 +128,8 @@ if ($step === 'admin' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = (string)($_POST['password'] ?? '');
     $displayName = trim($_POST['display_name'] ?? '');
+    $siteName = trim($_POST['site_name'] ?? '') ?: 'My Blog';
+    $siteTagline = trim($_POST['site_tagline'] ?? '');
     if ($username === '' || strlen($password) < 8) {
       $error = 'Username is required and password must be at least 8 characters.';
     } else {
@@ -142,6 +144,22 @@ if ($step === 'admin' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param('ssss', $username, $hash, $roleName, $displayName);
         if ($stmt->execute()) {
           $stmt->close();
+
+          require_once $rootDir . '/includes/migrate.php';
+          cyberblog_migrate($mysqli);
+          if (empty($siteTagline)) {
+            $siteTagline = 'Welcome to ' . $siteName . ' - fresh posts, guides and reviews.';
+          }
+          $footerText = '© {year} ' . $siteName . '. All rights reserved.';
+          $aboutHtml = '<p class="text-lg">Welcome to ' . htmlspecialchars($siteName, ENT_QUOTES) . '.</p>'
+            . '<h2 class="text-2xl font-semibold mt-8">Our Mission</h2><p>Tell your readers what this blog is about.</p>'
+            . '<h2 class="text-2xl font-semibold mt-8">Editorial Standards</h2><p>Describe how content on this blog is researched and written.</p>'
+            . '<h2 class="text-2xl font-semibold mt-8">Topics We Cover</h2><ul class="list-disc list-inside space-y-2 text-neutral-300"><li>Add a topic</li><li>Add another topic</li></ul>';
+          $upd = $mysqli->prepare("UPDATE cms_settings SET site_name=?, site_tagline=?, footer_text=?, about_content_html=? WHERE id=1");
+          $upd->bind_param('ssss', $siteName, $siteTagline, $footerText, $aboutHtml);
+          $upd->execute();
+          $upd->close();
+
           unset($_SESSION['install_db_ready'], $_SESSION['install_csrf']);
           header('Location: ' . '../admin/login.php?installed=1');
           exit;
@@ -238,6 +256,10 @@ $dbCfgPrefill = ['host' => 'localhost', 'name' => '', 'user' => '', 'port' => 33
       <form method="POST" action="?step=admin" autocomplete="off">
         <input type="hidden" name="step" value="admin">
         <input type="hidden" name="csrf" value="<?php echo e($csrf); ?>">
+        <label>Blog name</label>
+        <input name="site_name" autocomplete="off" placeholder="e.g. My Blog" required>
+        <label>Tagline <span style="color:#737373;font-weight:400">(optional, shown on the homepage)</span></label>
+        <input name="site_tagline" autocomplete="off" placeholder="A short description of your blog">
         <label>Username</label>
         <input name="username" autocomplete="off" required>
         <label>Display name</label>

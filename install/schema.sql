@@ -75,6 +75,11 @@ CREATE TABLE IF NOT EXISTS cms_settings (
   ads_header_code TEXT DEFAULT NULL,
   ads_inpost_code TEXT DEFAULT NULL,
   ads_midcontent_code TEXT DEFAULT NULL,
+  site_name VARCHAR(255) DEFAULT NULL,
+  site_tagline TEXT DEFAULT NULL,
+  footer_text VARCHAR(500) DEFAULT NULL,
+  about_content_html LONGTEXT DEFAULT NULL,
+  nav_category_ids VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

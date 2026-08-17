@@ -21,3 +21,6 @@ if (!$mysqli || !$schemaReady) {
   header('Location: ' . base_url('install/index.php'));
   exit;
 }
+
+require_once __DIR__ . '/migrate.php';
+cyberblog_migrate($mysqli);

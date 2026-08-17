@@ -3,8 +3,8 @@
   <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="grid md:grid-cols-3 gap-8 text-sm">
       <div>
-        <h3 class="font-semibold text-neutral-100 mb-3">CyberBlog</h3>
-        <p class="text-neutral-400">We have a wealth of proven expertise in security integration, networking, automation, and cybersecurity. At CyberRose, we deliver real human reviews and genuine blogs — authentic human insights</p>
+        <h3 class="font-semibold text-neutral-100 mb-3"><?php echo e($siteDisplayName); ?></h3>
+        <p class="text-neutral-400"><?php echo e($siteSettings['site_tagline'] ?: 'Welcome to ' . $siteDisplayName . '.'); ?></p>
       </div>
       <div>
         <h3 class="font-semibold text-neutral-100 mb-3">Quick Links</h3>
@@ -26,11 +26,13 @@
       </div>
     </div>
     <div class="mt-8 pt-8 border-t border-neutral-800 text-center text-neutral-400 text-sm">
-      © <span id="year"></span> CyberBlog, a CyberRose Systems property. All rights reserved.
+      <?php
+        $footerTemplate = $siteSettings['footer_text'] ?: ('© {year} ' . $siteDisplayName . '. All rights reserved.');
+        echo e(str_replace('{year}', date('Y'), $footerTemplate));
+      ?>
     </div>
   </div>
 </footer>
-<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 <script src="<?php echo base_url('assets/js/main.js'); ?>"></script>
 <script>
 // Theme toggle

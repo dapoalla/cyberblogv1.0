@@ -2,7 +2,6 @@
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
 $pageTitle = 'Home';
-$metaDescription = 'Latest posts from CyberBlog';
 include __DIR__ . '/../includes/template_header.php';
 
 // Pagination
@@ -45,8 +44,10 @@ $hasMore = ($offset + $perPage) < $totalCount;
 <div class="flex flex-col lg:flex-row gap-8">
   <!-- Main Content -->
   <div class="flex-1">
-    <h1 class="text-3xl font-bold">CyberBlog</h1>
-    <p class="text-neutral-300 mt-2">We have a wealth of proven expertise in security integration, networking, automation, and cybersecurity. At CyberRose, we deliver real human reviews and genuine blogs — authentic human insights</p>
+    <h1 class="text-3xl font-bold"><?php echo e($siteDisplayName); ?></h1>
+    <?php if (!empty($siteSettings['site_tagline'])): ?>
+      <p class="text-neutral-300 mt-2"><?php echo e($siteSettings['site_tagline']); ?></p>
+    <?php endif; ?>
     
     <?php if (isset($_GET['newsletter'])): ?>
       <?php if ($_GET['newsletter'] === 'success'): ?>

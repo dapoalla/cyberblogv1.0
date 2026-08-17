@@ -227,13 +227,49 @@ include __DIR__ . '/../includes/admin_nav.php';
 </form>
 <script src="https://cdn.tiny.cloud/1/<?php echo e($config['tinymce']['api_key'] ?? 'no-api-key'); ?>/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
+  function extractYouTubeId(url) {
+    if (!url) return null;
+    const m = String(url).match(/(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtu\.be\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
   tinymce.init({
     selector:'#editor',
     plugins:'link image media lists table code',
     menubar:false,
-    toolbar:'undo redo | styles | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | code',
+    toolbar:'undo redo | styles | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media youtube | table | code',
     height: 500,
     convert_urls:false,
+    setup: function(editor) {
+      editor.ui.registry.addButton('youtube', {
+        icon: 'embed',
+        tooltip: 'Insert YouTube video',
+        onAction: function() {
+          editor.windowManager.open({
+            title: 'Insert YouTube Video',
+            body: {
+              type: 'panel',
+              items: [
+                { type: 'input', name: 'url', label: 'YouTube URL', placeholder: 'https://www.youtube.com/watch?v=...' }
+              ]
+            },
+            buttons: [
+              { type: 'cancel', text: 'Cancel' },
+              { type: 'submit', text: 'Insert', primary: true }
+            ],
+            onSubmit: function(api) {
+              const data = api.getData();
+              const id = extractYouTubeId(data.url);
+              if (!id) { alert('Could not find a valid YouTube video ID in that URL.'); return; }
+              editor.insertContent(
+                '<div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/' + id + '" ' +
+                'title="YouTube video player" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div><p></p>'
+              );
+              api.close();
+            }
+          });
+        }
+      });
+    },
   });
   const helper=document.getElementById('linkHelper');
   helper && helper.addEventListener('change',()=>{ if(helper.value){ navigator.clipboard.writeText(helper.value); alert('Copied to clipboard: '+helper.value); helper.selectedIndex=0; } });

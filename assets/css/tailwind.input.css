@@ -27,3 +27,7 @@ body, p, .text-neutral-300{font-weight:300}
 .grey-mode .text-neutral-300{color:#d4d4d8 !important}
 .grey-mode .text-neutral-400{color:#a1a1aa !important}
 .grey-mode .text-neutral-500{color:#71717a !important}
+
+/* Responsive 16:9 embeds (YouTube, etc.) dropped into post content */
+.video-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:1.5rem 0;border-radius:.5rem}
+.video-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}

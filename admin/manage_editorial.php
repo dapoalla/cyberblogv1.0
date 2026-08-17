@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 require_admin();
 
 // Only super_editor can manage editorial team

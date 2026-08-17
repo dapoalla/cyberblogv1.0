@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../includes/db.php';
-require __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/helpers.php';
 
 $u = trim($_GET['u'] ?? '');
 if ($u === '') { http_response_code(400); echo 'Missing editor username'; exit; }

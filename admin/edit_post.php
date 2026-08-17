@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 require_admin();
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;

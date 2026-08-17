@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../includes/db.php';
-require __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/helpers.php';
 $slug=$_GET['slug']??'';
 $stmt=$mysqli->prepare("SELECT id,name FROM cms_categories WHERE slug=? LIMIT 1");
 $stmt->bind_param('s',$slug);$stmt->execute();$cat=$stmt->get_result()->fetch_assoc();$stmt->close();

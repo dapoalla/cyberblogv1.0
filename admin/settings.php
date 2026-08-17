@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 require_admin();
 $msg='';
 if($_SERVER['REQUEST_METHOD']==='POST' && csrf_check($_POST['csrf']??'')){

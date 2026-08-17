@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/helpers.php';
 session_name('cr_blog2_pub'); if(session_status()===PHP_SESSION_NONE) session_start();
 
 // Capture the return URL from referer if not already set

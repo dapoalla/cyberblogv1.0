@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../includes/db.php';
-require __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/helpers.php';
 $pageTitle = 'About Us';
 $metaDescription = 'Learn more about CyberBlog and our editorial team';
 include __DIR__ . '/../includes/template_header.php';

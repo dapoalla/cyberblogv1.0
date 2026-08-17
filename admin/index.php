@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 require_admin();
 $pageTitle='Dashboard'; $metaDescription='';
 include __DIR__ . '/../includes/template_header.php';

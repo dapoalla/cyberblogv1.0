@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../includes/db.php';
-require __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/helpers.php';
 $__sess_started = false;
 if (session_status() === PHP_SESSION_NONE) {
   session_name('cr_blog2_pub');

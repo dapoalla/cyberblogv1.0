@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../includes/db.php';
-require __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/helpers.php';
 $pageTitle = 'Reviews';
 $metaDescription = 'Product and service reviews from CyberBlog';
 include __DIR__ . '/../includes/template_header.php';

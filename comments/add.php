@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../includes/db.php';
-require __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/helpers.php';
 session_name('cr_blog2_pub'); if(session_status()===PHP_SESSION_NONE) session_start();
 if($_SERVER['REQUEST_METHOD']!=='POST'){ http_response_code(405); echo 'Method not allowed'; exit; }
 $pid=(int)($_POST['post_id']??0); $content=trim($_POST['content']??''); $slug=$_POST['slug']??'';

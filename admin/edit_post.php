@@ -38,11 +38,11 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && csrf_check($_POST['csrf']??'')) {
   $post['status'] = in_array(($_POST['status'] ?? 'draft'), ['draft','published','scheduled'], true) ? $_POST['status'] : 'draft';
   $post['published_at'] = trim($_POST['published_at'] ?? '');
   if (strpos($post['published_at'],'T')!==false) $post['published_at']=str_replace('T',' ',$post['published_at']);
-  
-  // Auto-set published_at to NOW if changing to published and no date set
-  if ($post['status'] === 'published' && empty($post['published_at'])) {
-    $post['published_at'] = date('Y-m-d H:i:s');
-  }
+
+  // If publishing with no explicit date, let MySQL's own NOW() set it rather than
+  // PHP's date() - the two can be an hour apart when PHP and MySQL disagree on
+  // timezone, which made freshly-published posts invisible until NOW() caught up.
+  $autoPublishNow = ($post['status'] === 'published' && $post['published_at'] === '');
   $post['meta_title'] = trim($_POST['meta_title'] ?? '');
   $post['meta_description'] = trim($_POST['meta_description'] ?? '');
   $post['og_image'] = trim($_POST['og_image'] ?? '');
@@ -82,14 +82,23 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && csrf_check($_POST['csrf']??'')) {
   }
 
   if ($id) {
-    $stmt = $mysqli->prepare("UPDATE cms_posts SET title=?, slug=?, excerpt=?, content_html=?, cover_image=?, category_id=?, status=?, published_at=IF(?='', NULL, ?), meta_title=?, meta_description=?, og_image=?, related_post_ids=?, author_name=?, updated_at=NOW() WHERE id=?");
-    // Types: s,s,s,s,s, i, s, s, s, s, s, s, s, s, i  => 'sssssissssssssi'
-    $stmt->bind_param('sssssissssssssi', $post['title'],$post['slug'],$post['excerpt'],$post['content_html'],$post['cover_image'],$post['category_id'],$post['status'],$post['published_at'],$post['published_at'],$post['meta_title'],$post['meta_description'],$post['og_image'],$post['related_post_ids'],$post['author_name'],$id);
+    $publishedAtSql = $autoPublishNow ? 'NOW()' : "IF(?='', NULL, ?)";
+    $stmt = $mysqli->prepare("UPDATE cms_posts SET title=?, slug=?, excerpt=?, content_html=?, cover_image=?, category_id=?, status=?, published_at=$publishedAtSql, meta_title=?, meta_description=?, og_image=?, related_post_ids=?, author_name=?, updated_at=NOW() WHERE id=?");
+    if ($autoPublishNow) {
+      $stmt->bind_param('sssssisssssssi', $post['title'],$post['slug'],$post['excerpt'],$post['content_html'],$post['cover_image'],$post['category_id'],$post['status'],$post['meta_title'],$post['meta_description'],$post['og_image'],$post['related_post_ids'],$post['author_name'],$id);
+    } else {
+      $stmt->bind_param('sssssissssssssi', $post['title'],$post['slug'],$post['excerpt'],$post['content_html'],$post['cover_image'],$post['category_id'],$post['status'],$post['published_at'],$post['published_at'],$post['meta_title'],$post['meta_description'],$post['og_image'],$post['related_post_ids'],$post['author_name'],$id);
+    }
     $stmt->execute(); $stmt->close();
     $msg='Post updated.';
   } else {
-    $stmt = $mysqli->prepare("INSERT INTO cms_posts (title, slug, excerpt, content_html, cover_image, category_id, status, published_at, created_at, meta_title, meta_description, og_image, related_post_ids, author_name) VALUES (?,?,?,?,?,?,?,?,NOW(),?,?,?,?,?)");
-    $stmt->bind_param('sssssisssssss', $post['title'],$post['slug'],$post['excerpt'],$post['content_html'],$post['cover_image'],$post['category_id'],$post['status'],$post['published_at'],$post['meta_title'],$post['meta_description'],$post['og_image'],$post['related_post_ids'],$post['author_name']);
+    $publishedAtSql = $autoPublishNow ? 'NOW()' : '?';
+    $stmt = $mysqli->prepare("INSERT INTO cms_posts (title, slug, excerpt, content_html, cover_image, category_id, status, published_at, created_at, meta_title, meta_description, og_image, related_post_ids, author_name) VALUES (?,?,?,?,?,?,?,$publishedAtSql,NOW(),?,?,?,?,?)");
+    if ($autoPublishNow) {
+      $stmt->bind_param('sssssissssss', $post['title'],$post['slug'],$post['excerpt'],$post['content_html'],$post['cover_image'],$post['category_id'],$post['status'],$post['meta_title'],$post['meta_description'],$post['og_image'],$post['related_post_ids'],$post['author_name']);
+    } else {
+      $stmt->bind_param('sssssisssssss', $post['title'],$post['slug'],$post['excerpt'],$post['content_html'],$post['cover_image'],$post['category_id'],$post['status'],$post['published_at'],$post['meta_title'],$post['meta_description'],$post['og_image'],$post['related_post_ids'],$post['author_name']);
+    }
     $stmt->execute(); $id = $stmt->insert_id; $stmt->close();
     header('Location: '.base_url('admin/edit_post.php?id='.$id.'&saved=1'));
     exit;

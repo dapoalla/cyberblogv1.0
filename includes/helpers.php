@@ -13,3 +13,24 @@ function slugify(string $t): string {
   $t = trim($t, '-');
   return $t ?: uniqid('post-');
 }
+function start_public_session(): void {
+  if (session_status() !== PHP_SESSION_NONE) return;
+  session_name('cr_blog2_pub');
+  $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (($_SERVER['SERVER_PORT'] ?? '') == 443)
+    || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+  $cookieParams = [
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => $isHttps,
+    'httponly' => true,
+    'samesite' => 'Lax',
+  ];
+  if (PHP_VERSION_ID >= 70300) {
+    session_set_cookie_params($cookieParams);
+  } else {
+    session_set_cookie_params(0, '/' . ($isHttps ? '; Secure; HttpOnly' : ''));
+  }
+  session_start();
+}

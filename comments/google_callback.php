@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
-session_name('cr_blog2_pub'); if(session_status()===PHP_SESSION_NONE) session_start();
+start_public_session();
 // Prefer config.php oauth
 $app = require __DIR__ . '/../config.php';
 $oauth = $app['oauth'] ?? [];

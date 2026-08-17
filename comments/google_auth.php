@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/helpers.php';
-session_name('cr_blog2_pub'); if(session_status()===PHP_SESSION_NONE) session_start();
+start_public_session();
 
 // Capture the return URL from referer if not already set
 if (empty($_SESSION['after_login_redirect']) && !empty($_SERVER['HTTP_REFERER'])) {

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
-session_name('cr_blog2_pub'); if(session_status()===PHP_SESSION_NONE) session_start();
+start_public_session();
 if($_SERVER['REQUEST_METHOD']!=='POST'){ http_response_code(405); echo 'Method not allowed'; exit; }
 $pid=(int)($_POST['post_id']??0); $content=trim($_POST['content']??''); $slug=$_POST['slug']??'';
 if($pid<=0 || $content===''){ http_response_code(400); echo 'Missing fields'; exit; }

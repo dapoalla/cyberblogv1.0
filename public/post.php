@@ -1,12 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
-$__sess_started = false;
-if (session_status() === PHP_SESSION_NONE) {
-  session_name('cr_blog2_pub');
-  session_start();
-  $__sess_started = true;
-}
+start_public_session();
 $slug = $_GET['slug'] ?? '';
 $stmt=$mysqli->prepare("SELECT p.*,c.name AS category_name,c.slug AS category_slug FROM cms_posts p LEFT JOIN cms_categories c ON c.id=p.category_id WHERE p.slug=? AND p.status='published' LIMIT 1");
 $stmt->bind_param('s',$slug);$stmt->execute();$post=$stmt->get_result()->fetch_assoc();$stmt->close();

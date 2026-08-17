@@ -34,7 +34,7 @@
 </head>
 <body class="bg-neutral-950 text-neutral-100">
 <header class="sticky top-0 z-50 bg-neutral-950/80 backdrop-blur border-b border-neutral-800">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
     <a href="<?php echo base_url('public/index.php'); ?>" class="flex items-center gap-3">
       <img src="https://www.cyberrose.com.ng/CyberRose%20Logo_tiny.png" alt="CyberRose" class="h-8 w-auto">
       <span class="text-xl font-extrabold tracking-tight">CyberBlog</span>
@@ -57,4 +57,4 @@
     </nav>
   </div>
 </header>
-<main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<main class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

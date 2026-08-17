@@ -19,6 +19,7 @@ if ($res = $mysqli->query("SELECT display_name, username, bio, profile_image, ro
 
 include __DIR__ . '/../includes/template_header.php';
 ?>
+<div class="max-w-5xl mx-auto">
 <h1 class="text-3xl font-bold">Editorial Team</h1>
 <p class="text-neutral-300 mt-2">Meet the experts behind CyberBlog</p>
 
@@ -57,5 +58,6 @@ include __DIR__ . '/../includes/template_header.php';
   <h2 class="text-xl font-semibold mb-3">Join Our Team</h2>
   <p class="text-neutral-300">Interested in contributing to CyberBlog? We're always looking for passionate writers and experts in cybersecurity, networking, and technology.</p>
   <a href="<?php echo base_url('public/contact.php'); ?>" class="inline-block mt-4 bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded">Get in Touch</a>
+</div>
 </div>
 <?php include __DIR__ . '/../includes/template_footer.php'; ?>

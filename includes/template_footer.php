@@ -1,6 +1,6 @@
 </main>
 <footer class="border-t border-neutral-800 mt-12">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="grid md:grid-cols-3 gap-8 text-sm">
       <div>
         <h3 class="font-semibold text-neutral-100 mb-3">CyberBlog</h3>

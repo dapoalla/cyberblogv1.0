@@ -5,6 +5,7 @@ $pageTitle = 'About Us';
 $metaDescription = 'Learn more about CyberBlog and our editorial team';
 include __DIR__ . '/../includes/template_header.php';
 ?>
+<div class="max-w-3xl mx-auto">
 <h1 class="text-3xl font-bold">About CyberBlog</h1>
 <div class="mt-6 prose prose-invert max-w-none">
   <p class="text-lg">Welcome to CyberBlog, your trusted source for insights on security integration, networking, automation, and cybersecurity.</p>
@@ -31,6 +32,7 @@ include __DIR__ . '/../includes/template_header.php';
   
   <h2 class="text-2xl font-semibold mt-8">Stay Updated</h2>
   <p>Subscribe to our newsletter to receive the latest articles and updates directly in your inbox.</p>
+</div>
 </div>
 <?php include __DIR__ . '/../includes/template_footer.php'; ?>
 

@@ -54,7 +54,7 @@ include __DIR__ . '/../includes/template_header.php';
 <?php if (!empty($posts)): ?>
   <div class="mt-10">
     <h3 class="text-xl font-semibold">Posts by <?php echo e($editor['display_name']); ?></h3>
-    <div class="mt-4 grid gap-6 md:grid-cols-2">
+    <div class="mt-4 grid gap-6 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
       <?php foreach ($posts as $p): ?>
         <article class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
           <?php if (!empty($p['cover_image'])): ?>

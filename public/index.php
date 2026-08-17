@@ -62,7 +62,7 @@ $hasMore = ($offset + $perPage) < $totalCount;
 
     <section class="mt-8">
       <h2 class="text-2xl font-semibold">All Posts</h2>
-      <div class="mt-4 grid gap-6 md:grid-cols-2">
+      <div class="mt-4 grid gap-6 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
         <?php foreach ($posts as $p): ?>
           <article class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden hover:border-neutral-700 transition">
             <?php if (!empty($p['cover_image'])): ?>

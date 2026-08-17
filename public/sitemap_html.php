@@ -31,6 +31,7 @@ if ($res = $mysqli->query("SELECT p.id, p.title, p.slug, c.id as cat_id, c.name 
   }
 }
 ?>
+<div class="max-w-5xl mx-auto">
 <h1 class="text-3xl font-bold">Sitemap</h1>
 <p class="text-neutral-300 mt-2">Browse all content on CyberBlog</p>
 
@@ -68,5 +69,6 @@ if ($res = $mysqli->query("SELECT p.id, p.title, p.slug, c.id as cat_id, c.name 
       </ul>
     </section>
   <?php endif; ?>
+</div>
 </div>
 <?php include __DIR__ . '/../includes/template_footer.php'; ?>

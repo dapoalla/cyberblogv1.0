@@ -17,6 +17,7 @@ $metaDescription=$post['meta_description']?:($post['excerpt']?:'');
 $inc=$mysqli->prepare("UPDATE cms_posts SET views=views+1 WHERE id=?"); $inc->bind_param('i',$post['id']); $inc->execute(); $inc->close();
 include __DIR__ . '/../includes/template_header.php';
 ?>
+<article class="max-w-3xl mx-auto">
   <h1 class="text-3xl font-bold"><?php echo e($post['title']); ?></h1>
   <?php
     $byline = [];
@@ -156,7 +157,7 @@ include __DIR__ . '/../includes/template_header.php';
   $q=$mysqli->prepare("SELECT c.content,c.created_at,u.name,u.picture FROM cms_comments c JOIN cms_oauth_users u ON u.id=c.oauth_user_id WHERE c.post_id=? AND c.status='approved' ORDER BY c.created_at DESC");
   $q->bind_param('i',$post['id']); $q->execute(); $r=$q->get_result(); while($row=$r->fetch_assoc()) $comments[]=$row; $q->close();
 ?>
-<section id="comments" class="mt-12">
+<section id="comments" class="mt-12 max-w-3xl mx-auto">
   <h2 class="text-2xl font-semibold">Comments</h2>
   <div class="mt-4 space-y-4">
     <?php foreach($comments as $c): ?>

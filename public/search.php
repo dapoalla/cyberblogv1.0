@@ -55,7 +55,7 @@ if (!empty($query) || $category > 0) {
 include __DIR__ . '/../includes/template_header.php';
 ?>
 <h1 class="text-3xl font-bold">Search</h1>
-<form method="GET" class="mt-6 flex flex-col md:flex-row gap-3">
+<form method="GET" class="mt-6 max-w-2xl flex flex-col md:flex-row gap-3">
   <input type="text" name="q" value="<?php echo e($query); ?>" placeholder="Search posts..." class="flex-1 rounded-md bg-neutral-950 border border-neutral-800 px-4 py-2" />
   <select name="category" class="rounded-md bg-neutral-950 border border-neutral-800 px-4 py-2">
     <option value="">All Categories</option>
@@ -72,7 +72,7 @@ include __DIR__ . '/../includes/template_header.php';
     <?php if (empty($posts)): ?>
       <p class="text-neutral-400 mt-4">No posts found matching your search.</p>
     <?php else: ?>
-      <div class="mt-4 grid gap-6 md:grid-cols-2">
+      <div class="mt-4 grid gap-6 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
         <?php foreach ($posts as $p): ?>
           <article class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
             <?php if (!empty($p['cover_image'])): ?>

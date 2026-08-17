@@ -11,7 +11,7 @@ $posts=[]; $q=$mysqli->prepare("SELECT id,title,slug,excerpt,cover_image FROM cm
 $q->bind_param('i',$cat['id']);$q->execute();$r=$q->get_result(); while($row=$r->fetch_assoc()) $posts[]=$row; $q->close();
 ?>
 <h1 class="text-2xl font-bold"><?php echo e($cat['name']); ?></h1>
-<div class="mt-6 grid gap-6 md:grid-cols-2">
+<div class="mt-6 grid gap-6 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
 <?php foreach($posts as $p): ?>
   <article class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
     <?php if(!empty($p['cover_image'])): ?><a href="<?php echo base_url('public/post.php?slug='.e($p['slug']));?>"><img class="w-full aspect-video object-cover" src="<?php echo e($p['cover_image']); ?>" alt=""></a><?php endif; ?>

@@ -1,7 +1,24 @@
 <?php
+// Auto-detects the URL subfolder the app is deployed into (e.g. "/blog2") by
+// comparing the project's filesystem path against the server's document root.
+// Lets base_url() work out of the box whether the app sits at the domain root
+// or in an arbitrary subfolder, without needing config.local.php to exist yet -
+// important for the very first request of a fresh install.
+function detect_base_url(): string {
+  static $cached = null;
+  if ($cached !== null) return $cached;
+  $projectRoot = rtrim(str_replace('\\', '/', dirname(__DIR__)), '/');
+  $docRoot = rtrim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
+  $base = '';
+  if ($docRoot !== '' && strpos($projectRoot, $docRoot) === 0) {
+    $base = substr($projectRoot, strlen($docRoot));
+  }
+  return $cached = $base;
+}
 function base_url(string $path = ''): string {
   $config = require __DIR__ . '/../config.php';
   $base = $config['base_url'] ?? '';
+  if ($base === '') $base = detect_base_url();
   if ($base && $base[0] !== '/') $base = '/'.$base;
   $path = ltrim($path, '/');
   return ($base ? $base.'/' : '/').$path;

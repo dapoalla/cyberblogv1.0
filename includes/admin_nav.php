@@ -21,6 +21,15 @@ if (empty($_SESSION['admin'])) {
         </svg>
         View Blog
       </a>
+      <?php if (($_SESSION['admin']['role'] ?? '') === 'super_editor'): ?>
+        <span class="text-neutral-600">|</span>
+        <a href="<?php echo base_url('admin/backup.php'); ?>" class="inline-flex items-center gap-2 text-sm text-neutral-300 hover:text-sky-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M7 10l5 5 5-5M12 15V3"></path>
+          </svg>
+          Backup
+        </a>
+      <?php endif; ?>
     </div>
     <div class="text-sm text-neutral-400">
       <?php echo e($_SESSION['admin']['username'] ?? 'Admin'); ?>

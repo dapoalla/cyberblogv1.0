@@ -53,6 +53,9 @@ if ($res=$mysqli->query("SELECT COUNT(*) c FROM cms_user_suggestions WHERE statu
     <a class="bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded" href="analytics.php">Analytics</a>
     <a class="bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded" href="manage_editorial.php">Editorial Team</a>
     <a class="bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded" href="settings.php">Settings</a>
+    <?php if (($_SESSION['admin']['role'] ?? '') === 'super_editor'): ?>
+      <a class="bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded" href="backup.php">Backup &amp; Restore</a>
+    <?php endif; ?>
     <a class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded" href="logout.php">Logout</a>
   </div>
 </div>

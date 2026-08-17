@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title><?php echo isset($pageTitle)? e($pageTitle).' | ' : ''; ?><?php echo e($config['site_name']); ?></title>
   <meta name="description" content="<?php echo isset($metaDescription)? e($metaDescription) : 'CyberBlog'; ?>" />
-  <link rel="preconnect" href="https://cdn.tailwindcss.com">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
-  <link rel="stylesheet" href="<?php echo base_url('assets/css/styles.css'); ?>" />
-  <style>html,body{font-family:'Poppins',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}</style>
+  <?php
+    $cssRelPath = 'assets/css/tailwind.min.css';
+    $cssAbsPath = __DIR__ . '/../' . $cssRelPath;
+    $cssVer = file_exists($cssAbsPath) ? filemtime($cssAbsPath) : 1;
+  ?>
+  <link rel="preload" as="font" type="font/woff2" href="<?php echo base_url('assets/fonts/poppins-400.woff2'); ?>" crossorigin>
+  <link rel="stylesheet" href="<?php echo base_url($cssRelPath); ?>?v=<?php echo (int)$cssVer; ?>" />
   <script>
     // Dark mode toggle - apply immediately to prevent flash
     (function() {

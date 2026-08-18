@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && csrf_check($_POST['csrf']??'')) {
     $publishedAtSql = $autoPublishNow ? 'NOW()' : "IF(?='', NULL, ?)";
     $stmt = $mysqli->prepare("UPDATE cms_posts SET title=?, slug=?, excerpt=?, content_html=?, cover_image=?, category_id=?, status=?, published_at=$publishedAtSql, meta_title=?, meta_description=?, og_image=?, related_post_ids=?, author_name=?, updated_at=NOW() WHERE id=?");
     if ($autoPublishNow) {
-      $stmt->bind_param('sssssisssssssi', $post['title'],$post['slug'],$post['excerpt'],$post['content_html'],$post['cover_image'],$post['category_id'],$post['status'],$post['meta_title'],$post['meta_description'],$post['og_image'],$post['related_post_ids'],$post['author_name'],$id);
+      $stmt->bind_param('sssssissssssi', $post['title'],$post['slug'],$post['excerpt'],$post['content_html'],$post['cover_image'],$post['category_id'],$post['status'],$post['meta_title'],$post['meta_description'],$post['og_image'],$post['related_post_ids'],$post['author_name'],$id);
     } else {
       $stmt->bind_param('sssssissssssssi', $post['title'],$post['slug'],$post['excerpt'],$post['content_html'],$post['cover_image'],$post['category_id'],$post['status'],$post['published_at'],$post['published_at'],$post['meta_title'],$post['meta_description'],$post['og_image'],$post['related_post_ids'],$post['author_name'],$id);
     }

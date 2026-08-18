@@ -8,7 +8,7 @@ $oauth = $app['oauth'] ?? [];
 $client_id = $oauth['client_id'] ?? '';
 $client_secret = $oauth['client_secret'] ?? '';
 $token_uri = $oauth['token_uri'] ?? 'https://oauth2.googleapis.com/token';
-if (empty($client_id) || empty($client_secret)) { http_response_code(500); echo 'Google OAuth not configured.'; exit; }
+if (empty($client_id) || empty($client_secret)) { http_response_code(500); echo 'Google sign-in is not configured yet. An admin can set this up at Admin -> Settings -> Google Sign-In.'; exit; }
 if(empty($_GET['state']) || !hash_equals($_SESSION['g_state']??'', (string)$_GET['state'])){ http_response_code(400); echo 'Invalid state'; exit; }
 unset($_SESSION['g_state']);
 $code=$_GET['code']??''; if(!$code){ http_response_code(400); echo 'Missing code'; exit; }

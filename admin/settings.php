@@ -15,10 +15,15 @@ if($_SERVER['REQUEST_METHOD']==='POST' && csrf_check($_POST['csrf']??'')){
   if($stmt){$stmt->bind_param('ssssssss',$header,$inpost,$midcontent,$siteName,$siteTagline,$footerText,$aboutHtml,$navCategoryIds);$stmt->execute();$stmt->close();$msg='Settings saved.';}
 
   $tinymceKey = trim((string)($_POST['tinymce_api_key']??''));
+  $googleClientId = trim((string)($_POST['google_client_id']??''));
+  $googleClientSecret = trim((string)($_POST['google_client_secret']??''));
   $configLocalPath = __DIR__ . '/../config.local.php';
   $existingLocal = file_exists($configLocalPath) ? (require $configLocalPath) : [];
-  if (($existingLocal['tinymce']['api_key'] ?? '') !== $tinymceKey) {
-    $newLocal = array_replace_recursive($existingLocal, ['tinymce' => ['api_key' => $tinymceKey]]);
+  $newLocal = array_replace_recursive($existingLocal, [
+    'tinymce' => ['api_key' => $tinymceKey],
+    'oauth' => ['client_id' => $googleClientId, 'client_secret' => $googleClientSecret],
+  ]);
+  if ($newLocal !== $existingLocal) {
     $php = "<?php\n// Real credentials for this environment. NEVER commit this file.\nreturn " . var_export($newLocal, true) . ";\n";
     @file_put_contents($configLocalPath, $php);
   }
@@ -29,6 +34,9 @@ $selectedNavCats = array_filter(explode(',', (string)$set['nav_category_ids']));
 $allCategories=[]; if($res=$mysqli->query("SELECT id,name FROM cms_categories ORDER BY name")){ while($r=$res->fetch_assoc()) $allCategories[]=$r; }
 $pageTitle='Settings'; include __DIR__ . '/../includes/template_header.php';
 include __DIR__ . '/../includes/admin_nav.php';
+
+$oauthScheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' : 'http://';
+$googleRedirectUri = $config['oauth']['redirect_uri'] ?: ($oauthScheme . ($_SERVER['HTTP_HOST'] ?? '') . base_url('comments/google_callback.php'));
 ?>
 <div class="flex items-center justify-between">
   <h1 class="text-2xl font-bold">Settings</h1>
@@ -89,6 +97,33 @@ include __DIR__ . '/../includes/admin_nav.php';
         <li>Copy it and paste it above, then save.</li>
       </ol>
       <p class="text-neutral-400 text-sm mt-2">Free tier covers up to 1,000 editor loads/month. Leave this blank and the editor still works, it just shows a small "unregistered domain" notice.</p>
+    </details>
+  </div>
+
+  <div class="bg-neutral-900 border border-neutral-800 rounded-lg p-4">
+    <h2 class="font-semibold mb-3">Google Sign-In (for comments)</h2>
+    <div class="text-xs text-neutral-400 mb-3">Readers sign in with Google to leave comments. This needs a Google OAuth client - free, no cost regardless of traffic.</div>
+
+    <label class="block text-sm mb-1 font-semibold">Authorized redirect URI</label>
+    <input type="text" readonly value="<?php echo e($googleRedirectUri); ?>" onclick="this.select()" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2 font-mono text-xs text-neutral-300" />
+    <div class="text-xs text-neutral-400 mt-1">Paste this <strong>exact</strong> value into Google Cloud Console when creating the OAuth client (click the field to select it).</div>
+
+    <label class="block text-sm mb-1 font-semibold mt-4">Google Client ID</label>
+    <input name="google_client_id" value="<?php echo e($config['oauth']['client_id'] ?? ''); ?>" placeholder="xxxxx.apps.googleusercontent.com" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2" />
+
+    <label class="block text-sm mb-1 font-semibold mt-4">Google Client Secret</label>
+    <input name="google_client_secret" value="<?php echo e($config['oauth']['client_secret'] ?? ''); ?>" placeholder="GOCSPX-..." class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2" />
+
+    <details class="mt-3">
+      <summary class="cursor-pointer text-sky-400 text-sm">How do I get these from Google?</summary>
+      <ol class="text-neutral-400 text-sm leading-6 mt-2 list-decimal list-inside space-y-1">
+        <li>Go to the <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="text-sky-400 hover:underline">Google Cloud Console - Credentials</a> page (create a project first if you don't have one).</li>
+        <li><strong>Create Credentials → OAuth client ID</strong>. If prompted, configure the consent screen first (External, add your email, app name can be your blog name).</li>
+        <li>Application type: <strong>Web application</strong>.</li>
+        <li>Under <strong>Authorized redirect URIs</strong>, paste the exact URL shown above.</li>
+        <li>Click Create, then copy the <strong>Client ID</strong> and <strong>Client secret</strong> into the fields above and save.</li>
+      </ol>
+      <p class="text-neutral-400 text-sm mt-2">Until this is configured, the "Sign in with Google" comment button will show an error instead of working - everything else on the site is unaffected.</p>
     </details>
   </div>
 

@@ -130,6 +130,7 @@ if ($step === 'admin' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $displayName = trim($_POST['display_name'] ?? '');
     $siteName = trim($_POST['site_name'] ?? '') ?: 'My Blog';
     $siteTagline = trim($_POST['site_tagline'] ?? '');
+    $tinymceKey = trim($_POST['tinymce_api_key'] ?? '');
     if ($username === '' || strlen($password) < 8) {
       $error = 'Username is required and password must be at least 8 characters.';
     } else {
@@ -159,6 +160,13 @@ if ($step === 'admin' && $_SERVER['REQUEST_METHOD'] === 'POST') {
           $upd->bind_param('ssss', $siteName, $siteTagline, $footerText, $aboutHtml);
           $upd->execute();
           $upd->close();
+
+          if ($tinymceKey !== '') {
+            $existingLocal = file_exists($configLocalPath) ? (require $configLocalPath) : [];
+            $newLocal = array_replace_recursive($existingLocal, ['tinymce' => ['api_key' => $tinymceKey]]);
+            $php = "<?php\n// Real credentials for this environment. NEVER commit this file.\nreturn " . var_export($newLocal, true) . ";\n";
+            @file_put_contents($configLocalPath, $php);
+          }
 
           unset($_SESSION['install_db_ready'], $_SESSION['install_csrf']);
           header('Location: ' . '../admin/login.php?installed=1');
@@ -266,6 +274,19 @@ $dbCfgPrefill = ['host' => 'localhost', 'name' => '', 'user' => '', 'port' => 33
         <input name="display_name" autocomplete="off" placeholder="Optional, shown publicly">
         <label>Password (min 8 characters)</label>
         <input type="password" name="password" autocomplete="new-password" minlength="8" required>
+
+        <label>TinyMCE API Key <span style="color:#737373;font-weight:400">(optional, powers the post editor)</span></label>
+        <input name="tinymce_api_key" autocomplete="off" placeholder="Paste your free TinyMCE API key here">
+        <details style="margin-top:.5rem">
+          <summary style="cursor:pointer;color:#38bdf8;font-size:.85rem">How do I get a free TinyMCE API key?</summary>
+          <ol style="color:#a3a3a3;font-size:.85rem;line-height:1.7;margin:.6rem 0 0;padding-left:1.2rem">
+            <li>Go to <a href="https://www.tiny.cloud/auth/signup/" target="_blank" rel="noopener">tiny.cloud/auth/signup</a> and create a free account (no credit card required).</li>
+            <li>Once signed in, you'll land on your Dashboard - your <strong>API Key</strong> is shown right there.</li>
+            <li>Copy it and paste it into the field above.</li>
+          </ol>
+          <p style="color:#a3a3a3;font-size:.85rem;margin:.5rem 0 0">The free tier covers up to 1,000 editor loads/month, which is plenty for a single blog's admin. You can skip this for now and add or change the key later from <strong>Settings</strong> - the editor still works without one, it just shows a small "unregistered domain" notice.</p>
+        </details>
+
         <button type="submit">Create admin &amp; finish</button>
       </form>
     <?php endif; ?>

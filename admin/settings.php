@@ -13,6 +13,15 @@ if($_SERVER['REQUEST_METHOD']==='POST' && csrf_check($_POST['csrf']??'')){
   $navCategoryIds = isset($_POST['nav_categories']) ? implode(',', array_filter(array_map('intval', $_POST['nav_categories']))) : '';
   $stmt=$mysqli->prepare("UPDATE cms_settings SET ads_header_code=?, ads_inpost_code=?, ads_midcontent_code=?, site_name=?, site_tagline=?, footer_text=?, about_content_html=?, nav_category_ids=? WHERE id=1");
   if($stmt){$stmt->bind_param('ssssssss',$header,$inpost,$midcontent,$siteName,$siteTagline,$footerText,$aboutHtml,$navCategoryIds);$stmt->execute();$stmt->close();$msg='Settings saved.';}
+
+  $tinymceKey = trim((string)($_POST['tinymce_api_key']??''));
+  $configLocalPath = __DIR__ . '/../config.local.php';
+  $existingLocal = file_exists($configLocalPath) ? (require $configLocalPath) : [];
+  if (($existingLocal['tinymce']['api_key'] ?? '') !== $tinymceKey) {
+    $newLocal = array_replace_recursive($existingLocal, ['tinymce' => ['api_key' => $tinymceKey]]);
+    $php = "<?php\n// Real credentials for this environment. NEVER commit this file.\nreturn " . var_export($newLocal, true) . ";\n";
+    @file_put_contents($configLocalPath, $php);
+  }
 }
 $set=['ads_header_code'=>'','ads_inpost_code'=>'','ads_midcontent_code'=>'','site_name'=>'','site_tagline'=>'','footer_text'=>'','about_content_html'=>'','nav_category_ids'=>''];
 if($res=$mysqli->query("SELECT * FROM cms_settings WHERE id=1")){$set=array_merge($set, $res->fetch_assoc()?:[]);}
@@ -66,6 +75,21 @@ include __DIR__ . '/../includes/admin_nav.php';
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
+  </div>
+
+  <div class="bg-neutral-900 border border-neutral-800 rounded-lg p-4">
+    <h2 class="font-semibold mb-3">Post Editor</h2>
+    <label class="block text-sm mb-1 font-semibold">TinyMCE API Key</label>
+    <input name="tinymce_api_key" value="<?php echo e($config['tinymce']['api_key'] === 'no-api-key' ? '' : ($config['tinymce']['api_key'] ?? '')); ?>" placeholder="Paste your free TinyMCE API key here" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2" />
+    <details class="mt-2">
+      <summary class="cursor-pointer text-sky-400 text-sm">How do I get a free TinyMCE API key?</summary>
+      <ol class="text-neutral-400 text-sm leading-6 mt-2 list-decimal list-inside space-y-1">
+        <li>Go to <a href="https://www.tiny.cloud/auth/signup/" target="_blank" rel="noopener" class="text-sky-400 hover:underline">tiny.cloud/auth/signup</a> and create a free account (no credit card required).</li>
+        <li>Once signed in, your <strong>API Key</strong> is shown right on your Dashboard.</li>
+        <li>Copy it and paste it above, then save.</li>
+      </ol>
+      <p class="text-neutral-400 text-sm mt-2">Free tier covers up to 1,000 editor loads/month. Leave this blank and the editor still works, it just shows a small "unregistered domain" notice.</p>
+    </details>
   </div>
 
   <div class="bg-neutral-900 border border-neutral-800 rounded-lg p-4">

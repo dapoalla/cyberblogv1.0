@@ -13,6 +13,7 @@ function cyberblog_migrate(mysqli $mysqli): void {
     'footer_text' => "ALTER TABLE cms_settings ADD COLUMN footer_text VARCHAR(500) NULL",
     'about_content_html' => "ALTER TABLE cms_settings ADD COLUMN about_content_html LONGTEXT NULL",
     'nav_category_ids' => "ALTER TABLE cms_settings ADD COLUMN nav_category_ids VARCHAR(255) NULL",
+    'onboarding_dismissed' => "ALTER TABLE cms_settings ADD COLUMN onboarding_dismissed TINYINT(1) NOT NULL DEFAULT 0",
   ];
   foreach ($wanted as $col => $ddl) {
     if (!isset($existing[$col])) {

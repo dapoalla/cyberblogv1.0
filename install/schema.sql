@@ -80,6 +80,7 @@ CREATE TABLE IF NOT EXISTS cms_settings (
   footer_text VARCHAR(500) DEFAULT NULL,
   about_content_html LONGTEXT DEFAULT NULL,
   nav_category_ids VARCHAR(255) DEFAULT NULL,
+  onboarding_dismissed TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

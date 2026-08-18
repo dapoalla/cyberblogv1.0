@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_admin();
 $msg='';
+$error='';
 if($_SERVER['REQUEST_METHOD']==='POST' && csrf_check($_POST['csrf']??'')){
   $header = (string)($_POST['ads_header_code']??'');
   $inpost = (string)($_POST['ads_inpost_code']??'');
@@ -24,8 +25,16 @@ if($_SERVER['REQUEST_METHOD']==='POST' && csrf_check($_POST['csrf']??'')){
     'oauth' => ['client_id' => $googleClientId, 'client_secret' => $googleClientSecret],
   ]);
   if ($newLocal !== $existingLocal) {
-    $php = "<?php\n// Real credentials for this environment. NEVER commit this file.\nreturn " . var_export($newLocal, true) . ";\n";
-    @file_put_contents($configLocalPath, $php);
+    if (file_exists($configLocalPath) && !is_writable($configLocalPath)) {
+      $error = 'Settings saved, but config.local.php is not writable by the web server, so the TinyMCE/Google credentials below were NOT updated. Fix the file permissions (it needs to be writable by the PHP process - commonly chmod 664 or 644 depending on your host) and save again.';
+    } else {
+      $php = "<?php\n// Real credentials for this environment. NEVER commit this file.\nreturn " . var_export($newLocal, true) . ";\n";
+      if (@file_put_contents($configLocalPath, $php) === false) {
+        $error = 'Settings saved, but could not write config.local.php (permission denied), so the TinyMCE/Google credentials below were NOT updated. Check that the web server can write to this file.';
+      } else {
+        $config = $newLocal; // reflect the just-saved values immediately below
+      }
+    }
   }
 }
 $set=['ads_header_code'=>'','ads_inpost_code'=>'','ads_midcontent_code'=>'','site_name'=>'','site_tagline'=>'','footer_text'=>'','about_content_html'=>'','nav_category_ids'=>''];
@@ -42,6 +51,7 @@ $googleRedirectUri = $config['oauth']['redirect_uri'] ?: ($oauthScheme . ($_SERV
   <h1 class="text-2xl font-bold">Settings</h1>
 </div>
 <?php if($msg):?><div class="mt-3 text-green-400 text-sm"><?php echo e($msg);?></div><?php endif; ?>
+<?php if($error):?><div class="mt-3 bg-red-900/30 border border-red-700 text-red-400 px-4 py-3 rounded text-sm"><?php echo e($error);?></div><?php endif; ?>
 <form method="POST" class="mt-6 grid gap-4 max-w-3xl">
   <div class="bg-neutral-900 border border-neutral-800 rounded-lg p-4">
     <h2 class="font-semibold mb-3">Site Identity</h2>

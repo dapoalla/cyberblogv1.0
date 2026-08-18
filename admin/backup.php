@@ -95,9 +95,26 @@ if (isset($_GET['action']) && $_GET['action'] === 'download' && isset($_GET['csr
 $msg = '';
 $error = '';
 
+// A POST whose body exceeds post_max_size makes PHP silently discard both
+// $_POST and $_FILES entirely - no error, no CSRF field, nothing - which
+// otherwise shows up as a baffling "please choose a file" even though one
+// was picked. Detect that specific case before anything CSRF-gated runs,
+// since the CSRF field itself is one of the things that gets dropped.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST) && empty($_FILES) && (int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
+  $sentMb = round(((int)$_SERVER['CONTENT_LENGTH']) / 1048576, 1);
+  $postMax = ini_get('post_max_size') ?: '?';
+  $uploadMax = ini_get('upload_max_filesize') ?: '?';
+  $error = "The uploaded file (~{$sentMb}MB) is larger than this server currently allows "
+    . "(post_max_size={$postMax}, upload_max_filesize={$uploadMax}). Ask your host to raise both, "
+    . "or - if you can edit PHP settings yourself (e.g. cPanel's MultiPHP INI Editor) - set them to at least 64M each, then try again.";
+}
+
 // --- Restore backup (.zip with photos, or legacy .sql-only) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restore']) && csrf_check($_POST['csrf'] ?? '')) {
-  if (empty($_FILES['restore_file']['name']) || !is_uploaded_file($_FILES['restore_file']['tmp_name'])) {
+  $uploadErr = $_FILES['restore_file']['error'] ?? UPLOAD_ERR_NO_FILE;
+  if ($uploadErr === UPLOAD_ERR_INI_SIZE || $uploadErr === UPLOAD_ERR_FORM_SIZE) {
+    $error = 'That file is larger than this server\'s upload_max_filesize/post_max_size allows (currently upload_max_filesize=' . (ini_get('upload_max_filesize') ?: '?') . '). Ask your host to raise it, or use cPanel\'s MultiPHP INI Editor if you manage PHP settings yourself.';
+  } elseif (empty($_FILES['restore_file']['name']) || !is_uploaded_file($_FILES['restore_file']['tmp_name'])) {
     $error = 'Please choose a backup file to restore.';
   } else {
     $tmpPath = $_FILES['restore_file']['tmp_name'];

@@ -16,13 +16,27 @@ DirectoryIndex public/index.php
 # php -- END cPanel-generated handler, do not edit
 
 # Deny direct access to files that should never be served
-<FilesMatch "^(config\.local\.php|composer\.(json|lock)|package(-lock)?\.json|tailwind\.config\.js|\.gitignore)$">
+<FilesMatch "^(config\.local\.php|composer\.(json|lock)|package(-lock)?\.json|tailwind\.config\.js|\.gitignore|\.user\.ini)$">
   Require all denied
 </FilesMatch>
 <FilesMatch "\.sql$">
   Require all denied
 </FilesMatch>
 RedirectMatch 404 /\.git
+
+# Raise upload limits for backup restore (large .zip with photos). Only
+# takes effect under mod_php - most cPanel hosts use CGI/FastCGI/FPM
+# instead, where .user.ini (see that file) is what actually applies.
+<IfModule mod_php.c>
+  php_value upload_max_filesize 64M
+  php_value post_max_size 66M
+  php_value max_execution_time 300
+</IfModule>
+<IfModule mod_php7.c>
+  php_value upload_max_filesize 64M
+  php_value post_max_size 66M
+  php_value max_execution_time 300
+</IfModule>
 
 # Compress text-based assets
 <IfModule mod_deflate.c>

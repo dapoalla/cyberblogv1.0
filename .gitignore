@@ -11,3 +11,7 @@ Thumbs.db
 
 # Stray local backup, not part of the app
 well-known (1).zip
+
+# User-uploaded content - real photos, not part of the template
+uploads/*
+!uploads/.gitkeep

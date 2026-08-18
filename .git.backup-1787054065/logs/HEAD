@@ -1,0 +1,16 @@
+0000000000000000000000000000000000000000 be75cfe5c16bf4cab8590a537b4888fedd8ed277 dapoalla <dapo.alla@gmail.com> 1786969114 +0100	commit (initial): Initial commit: CyberBlog v2.0
+be75cfe5c16bf4cab8590a537b4888fedd8ed277 1e0cc60aed69a7ddd63f18382e797c831473e109 dapoalla <dapo.alla@gmail.com> 1786969994 +0100	commit: Add first-run setup wizard and fix require_once bugs
+1e0cc60aed69a7ddd63f18382e797c831473e109 726752bb5c18db548b59e8ee4f2b9e2ef9628f3a dapoalla <dapo.alla@gmail.com> 1786970155 +0100	commit: Add pure-PHP backup and restore
+726752bb5c18db548b59e8ee4f2b9e2ef9628f3a 1f64ad78c891771a9c6382d41ab51c006a2a3e8d dapoalla <dapo.alla@gmail.com> 1786970431 +0100	commit: Replace Tailwind CDN with a compiled, purged CSS build
+1f64ad78c891771a9c6382d41ab51c006a2a3e8d 190f33cccafb80554c57b3921b280b50be4e0f3c dapoalla <dapo.alla@gmail.com> 1786970594 +0100	commit: Add YouTube video embedding to the post editor
+190f33cccafb80554c57b3921b280b50be4e0f3c 77da42f12b36cd556d5b95cb4f8ac1b9ab277bda dapoalla <dapo.alla@gmail.com> 1786970888 +0100	commit: Make desktop layout elastic instead of fixed-narrow
+77da42f12b36cd556d5b95cb4f8ac1b9ab277bda c1ffad971303eff5d1f1e31800323b3b2d16a97e dapoalla <dapo.alla@gmail.com> 1786975381 +0100	commit: Fix published_at using PHP's clock instead of MySQL's
+c1ffad971303eff5d1f1e31800323b3b2d16a97e 4cee14934b61a4e10db309b97a930750416a877f dapoalla <dapo.alla@gmail.com> 1786977174 +0100	commit: Fix Google sign-in "Invalid state" via hardened session cookies
+4cee14934b61a4e10db309b97a930750416a877f 8ca50f71b3202497266a1295c483110bd568c28d dapoalla <dapo.alla@gmail.com> 1786977194 +0100	commit: Make site name, homepage tagline, footer text, About page and
+8ca50f71b3202497266a1295c483110bd568c28d 7309d69795412fbe7e27e2f6c5a440bd2f965c48 dapoalla <dapo.alla@gmail.com> 1787004318 +0100	commit: Auto-detect the URL subfolder instead of hardcoding root
+7309d69795412fbe7e27e2f6c5a440bd2f965c48 e1d747391e9e55fcae2359de7f366ed5b497ea6f dapoalla <dapo.alla@gmail.com> 1787006526 +0100	commit: Fix restore failing on a fresh instance; back up photos too
+e1d747391e9e55fcae2359de7f366ed5b497ea6f a5c3f96f50d109806e0af6d277716c1ea602837e dapoalla <dapo.alla@gmail.com> 1787046045 +0100	commit: Add TinyMCE API key setup and a 3-slide onboarding wizard
+a5c3f96f50d109806e0af6d277716c1ea602837e d686f2359affdf658b12b08043c7e4fe78fe0609 dapoalla <dapo.alla@gmail.com> 1787046893 +0100	commit: SEO pass: canonical/OG/Twitter tags, structured data, breadcrumbs,
+d686f2359affdf658b12b08043c7e4fe78fe0609 65570f820d2d8dd41f78bc01826e877c0b821cb1 dapoalla <dapo.alla@gmail.com> 1787047631 +0100	commit: Add a lightweight first-party analytics system
+65570f820d2d8dd41f78bc01826e877c0b821cb1 b9dc27a7366ea80972d700e64af557dff7a48160 dapoalla <dapo.alla@gmail.com> 1787048375 +0100	commit: Fix fatal error updating a post to published with no explicit date
+b9dc27a7366ea80972d700e64af557dff7a48160 b82b0f8380dcba1866f6dcf0db5f0df0b3bda40c dapoalla <dapo.alla@gmail.com> 1787053459 +0100	commit: Add README

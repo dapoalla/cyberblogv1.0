@@ -15,6 +15,8 @@ if (!$editor) { http_response_code(404); echo 'Editor not found'; exit; }
 
 $pageTitle = $editor['display_name'] . ' - Editor Profile';
 $metaDescription = substr(trim($editor['bio'] ?? ''), 0, 150);
+require_once __DIR__ . '/../includes/analytics.php';
+cb_track_pageview($mysqli);
 
 // Determine the author label used in posts
 $authorLabel = $editor['display_name'] ?: $editor['username'];

@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/analytics.php';
+cb_track_pageview($mysqli);
 $pageTitle = 'Contact Us';
 $metaDescription = 'Get in touch with CyberBlog';
 

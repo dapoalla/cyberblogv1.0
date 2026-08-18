@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/analytics.php';
+cb_track_pageview($mysqli);
 $pageTitle = 'Home';
 include __DIR__ . '/../includes/template_header.php';
 

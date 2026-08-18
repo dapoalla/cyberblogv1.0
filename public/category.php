@@ -1,11 +1,13 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/analytics.php';
 $slug=$_GET['slug']??'';
 $stmt=$mysqli->prepare("SELECT id,name FROM cms_categories WHERE slug=? LIMIT 1");
 $stmt->bind_param('s',$slug);$stmt->execute();$cat=$stmt->get_result()->fetch_assoc();$stmt->close();
 if(!$cat){ http_response_code(404); echo 'Category not found'; exit; }
 $pageTitle='Category: '.$cat['name']; $metaDescription='';
+cb_track_pageview($mysqli);
 include __DIR__ . '/../includes/template_header.php';
 $posts=[]; $q=$mysqli->prepare("SELECT id,title,slug,excerpt,cover_image FROM cms_posts WHERE category_id=? AND status='published' ORDER BY COALESCE(published_at,created_at) DESC");
 $q->bind_param('i',$cat['id']);$q->execute();$r=$q->get_result(); while($row=$r->fetch_assoc()) $posts[]=$row; $q->close();

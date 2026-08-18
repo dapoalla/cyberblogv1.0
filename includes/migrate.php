@@ -20,4 +20,26 @@ function cyberblog_migrate(mysqli $mysqli): void {
       $mysqli->query($ddl);
     }
   }
+
+  $tableCheck = $mysqli->query("SHOW TABLES LIKE 'cms_analytics_events'");
+  if (!$tableCheck || $tableCheck->num_rows === 0) {
+    $mysqli->query("CREATE TABLE cms_analytics_events (
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+      event_type ENUM('pageview','search') NOT NULL DEFAULT 'pageview',
+      path VARCHAR(500) NOT NULL,
+      post_id INT UNSIGNED DEFAULT NULL,
+      visitor_id CHAR(32) NOT NULL,
+      referrer_domain VARCHAR(255) DEFAULT NULL,
+      device ENUM('desktop','mobile','tablet','bot','unknown') NOT NULL DEFAULT 'unknown',
+      country VARCHAR(2) DEFAULT NULL,
+      query VARCHAR(255) DEFAULT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id),
+      KEY idx_created_at (created_at),
+      KEY idx_visitor_time (visitor_id, created_at),
+      KEY idx_post (post_id),
+      KEY idx_path (path(191)),
+      KEY idx_event_type (event_type)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+  }
 }

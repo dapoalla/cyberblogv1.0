@@ -1,11 +1,14 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/analytics.php';
 $pageTitle = 'Search';
 $metaDescription = 'Search blog posts';
 
 $query = trim($_GET['q'] ?? '');
 $category = isset($_GET['category']) ? (int)$_GET['category'] : 0;
+cb_track_pageview($mysqli);
+if ($query !== '') cb_track_search($mysqli, $query);
 
 // Get all categories for filter
 $categories = [];

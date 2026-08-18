@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/analytics.php';
 start_public_session();
 $slug = $_GET['slug'] ?? '';
 $stmt=$mysqli->prepare("SELECT p.*,c.name AS category_name,c.slug AS category_slug FROM cms_posts p LEFT JOIN cms_categories c ON c.id=p.category_id WHERE p.slug=? AND p.status='published' LIMIT 1");
@@ -25,6 +26,7 @@ if (!empty($post['author_name'])) {
 }
 // views++
 $inc=$mysqli->prepare("UPDATE cms_posts SET views=views+1 WHERE id=?"); $inc->bind_param('i',$post['id']); $inc->execute(); $inc->close();
+cb_track_pageview($mysqli, (int)$post['id']);
 include __DIR__ . '/../includes/template_header.php';
 ?>
 <article class="max-w-3xl mx-auto">

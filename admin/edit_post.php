@@ -248,6 +248,15 @@ include __DIR__ . '/../includes/admin_nav.php';
     toolbar:'undo redo | styles | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media youtube | table | code',
     height: 500,
     convert_urls:false,
+    // The page itself renders exactly one H1 (the post title) - keep authors
+    // from creating a second one inside the content, which hurts SEO.
+    style_formats: [
+      { title: 'Paragraph', format: 'p' },
+      { title: 'Heading 2', format: 'h2' },
+      { title: 'Heading 3', format: 'h3' },
+      { title: 'Heading 4', format: 'h4' },
+      { title: 'Blockquote', format: 'blockquote' },
+    ],
     setup: function(editor) {
       editor.ui.registry.addButton('youtube', {
         icon: 'embed',

@@ -76,13 +76,13 @@ include __DIR__ . '/../includes/template_header.php';
         <?php foreach ($posts as $p): ?>
           <article class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
             <?php if (!empty($p['cover_image'])): ?>
-              <a href="<?php echo base_url('public/post.php?slug='.e($p['slug'])); ?>"><img src="<?php echo e($p['cover_image']); ?>" alt="<?php echo e($p['title']); ?>" class="w-full aspect-video object-cover" loading="lazy"></a>
+              <a href="<?php echo base_url('post/'.e($p['slug'])); ?>"><img src="<?php echo e($p['cover_image']); ?>" alt="<?php echo e($p['title']); ?>" class="w-full aspect-video object-cover" loading="lazy"></a>
             <?php endif; ?>
             <div class="p-6">
-              <h3 class="text-xl font-semibold"><a class="hover:text-sky-400" href="<?php echo base_url('public/post.php?slug='.e($p['slug'])); ?>"><?php echo e($p['title']); ?></a></h3>
+              <h3 class="text-xl font-semibold"><a class="hover:text-sky-400" href="<?php echo base_url('post/'.e($p['slug'])); ?>"><?php echo e($p['title']); ?></a></h3>
               <?php if (!empty($p['category'])): ?><div class="text-xs text-neutral-400 mt-1"><?php echo e($p['category']); ?> · <?php echo (int)($p['views'] ?? 0); ?> views</div><?php endif; ?>
               <?php if (!empty($p['excerpt'])): ?><p class="text-neutral-300 mt-3"><?php echo e($p['excerpt']); ?></p><?php endif; ?>
-              <a class="inline-block mt-4 text-sky-400 hover:underline" href="<?php echo base_url('public/post.php?slug='.e($p['slug'])); ?>">Read more</a>
+              <a class="inline-block mt-4 text-sky-400 hover:underline" href="<?php echo base_url('post/'.e($p['slug'])); ?>">Read more</a>
             </div>
           </article>
         <?php endforeach; ?>

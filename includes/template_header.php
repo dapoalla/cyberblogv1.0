@@ -26,6 +26,47 @@
   <title><?php echo isset($pageTitle)? e($pageTitle).' | ' : ''; ?><?php echo e($siteDisplayName); ?></title>
   <meta name="description" content="<?php echo isset($metaDescription)? e($metaDescription) : e($siteDisplayName); ?>" />
   <?php
+    // Canonical URL: pages can set $canonicalUrl before including this file
+    // (e.g. post.php uses the clean /post/slug form); otherwise derive it
+    // from the current request so every page still gets one.
+    $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' : 'http://';
+    $currentOrigin = $scheme . ($_SERVER['HTTP_HOST'] ?? '');
+    if (empty($canonicalUrl)) {
+      $canonicalUrl = $currentOrigin . strtok($_SERVER['REQUEST_URI'] ?? '', '?');
+    }
+    $ogTitleText = isset($pageTitle) ? $pageTitle : $siteDisplayName;
+    $ogDescText = isset($metaDescription) ? $metaDescription : $siteDisplayName;
+    $ogType = $ogType ?? 'website';
+    $ogImage = !empty($ogImage) ? $ogImage : '';
+    if ($ogImage && strpos($ogImage, '://') === false) {
+      $ogImage = $currentOrigin . (($ogImage[0] === '/') ? $ogImage : '/' . $ogImage);
+    }
+  ?>
+  <link rel="canonical" href="<?php echo e($canonicalUrl); ?>" />
+  <meta property="og:type" content="<?php echo e($ogType); ?>" />
+  <meta property="og:site_name" content="<?php echo e($siteDisplayName); ?>" />
+  <meta property="og:title" content="<?php echo e($ogTitleText); ?>" />
+  <meta property="og:description" content="<?php echo e($ogDescText); ?>" />
+  <meta property="og:url" content="<?php echo e($canonicalUrl); ?>" />
+  <?php if ($ogImage): ?><meta property="og:image" content="<?php echo e($ogImage); ?>" /><?php endif; ?>
+  <meta name="twitter:card" content="<?php echo $ogImage ? 'summary_large_image' : 'summary'; ?>" />
+  <meta name="twitter:title" content="<?php echo e($ogTitleText); ?>" />
+  <meta name="twitter:description" content="<?php echo e($ogDescText); ?>" />
+  <?php if ($ogImage): ?><meta name="twitter:image" content="<?php echo e($ogImage); ?>" /><?php endif; ?>
+  <script type="application/ld+json"><?php echo json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'WebSite',
+    'name' => $siteDisplayName,
+    'url' => $currentOrigin . base_url(''),
+  ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
+  <?php if (!empty($articleSchema)): ?>
+    <?php
+      if ($ogImage) $articleSchema['image'] = [$ogImage];
+      $articleSchema['publisher'] = ['@type' => 'Organization', 'name' => $siteDisplayName];
+    ?>
+    <script type="application/ld+json"><?php echo json_encode($articleSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
+  <?php endif; ?>
+  <?php
     $cssRelPath = 'assets/css/tailwind.min.css';
     $cssAbsPath = __DIR__ . '/../' . $cssRelPath;
     $cssVer = file_exists($cssAbsPath) ? filemtime($cssAbsPath) : 1;

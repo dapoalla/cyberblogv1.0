@@ -30,6 +30,32 @@ function slugify(string $t): string {
   $t = trim($t, '-');
   return $t ?: uniqid('post-');
 }
+// Renders a visible breadcrumb trail plus the matching BreadcrumbList JSON-LD.
+// $items is an ordered list of ['label' => string, 'url' => string|null] -
+// the last item is treated as the current page (rendered without a link).
+function render_breadcrumbs(array $items): void {
+  if (empty($items)) return;
+  echo '<nav aria-label="Breadcrumb" class="text-sm text-neutral-400 mb-4 flex flex-wrap items-center gap-1">';
+  $count = count($items);
+  foreach ($items as $i => $item) {
+    if ($i > 0) echo '<span class="text-neutral-600" aria-hidden="true">/</span>';
+    if (!empty($item['url']) && $i < $count - 1) {
+      echo '<a href="' . e($item['url']) . '" class="hover:text-sky-400">' . e($item['label']) . '</a>';
+    } else {
+      echo '<span class="text-neutral-300"' . ($i === $count - 1 ? ' aria-current="page"' : '') . '>' . e($item['label']) . '</span>';
+    }
+  }
+  echo '</nav>';
+
+  $ld = ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => []];
+  foreach ($items as $i => $item) {
+    $entry = ['@type' => 'ListItem', 'position' => $i + 1, 'name' => $item['label']];
+    if (!empty($item['url'])) $entry['item'] = $item['url'];
+    $ld['itemListElement'][] = $entry;
+  }
+  echo '<script type="application/ld+json">' . json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
+}
+
 function start_public_session(): void {
   if (session_status() !== PHP_SESSION_NONE) return;
   session_name('cr_blog2_pub');

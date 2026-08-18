@@ -58,12 +58,12 @@ include __DIR__ . '/../includes/template_header.php';
       <?php foreach ($posts as $p): ?>
         <article class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
           <?php if (!empty($p['cover_image'])): ?>
-            <a href="<?php echo base_url('public/post.php?slug='.e($p['slug'])); ?>">
+            <a href="<?php echo base_url('post/'.e($p['slug'])); ?>">
               <img class="w-full aspect-video object-cover" src="<?php echo e($p['cover_image']); ?>" alt="<?php echo e($p['title']); ?>" loading="lazy" />
             </a>
           <?php endif; ?>
           <div class="p-6">
-            <h4 class="text-lg font-semibold"><a class="hover:text-sky-400" href="<?php echo base_url('public/post.php?slug='.e($p['slug'])); ?>"><?php echo e($p['title']); ?></a></h4>
+            <h4 class="text-lg font-semibold"><a class="hover:text-sky-400" href="<?php echo base_url('post/'.e($p['slug'])); ?>"><?php echo e($p['title']); ?></a></h4>
             <div class="text-xs text-neutral-400 mt-1"><?php echo (int)($p['views'] ?? 0); ?> views</div>
             <?php if (!empty($p['excerpt'])): ?><p class="text-neutral-300 mt-3"><?php echo e($p['excerpt']); ?></p><?php endif; ?>
           </div>

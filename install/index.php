@@ -85,6 +85,18 @@ if ($step === 'database' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Could not connect: ' . e($connErr);
         $step = 'database';
       } else {
+        if (isset($_POST['overwrite'])) {
+          // Wipe any existing CyberBlog tables first so the schema below is
+          // guaranteed to install clean, rather than silently skipping
+          // tables that already exist (CREATE TABLE IF NOT EXISTS) which
+          // can leave a stale/corrupt schema in place.
+          $mysqli->query("SET FOREIGN_KEY_CHECKS=0");
+          $knownTables = ['cms_comments','cms_user_suggestions','cms_post_tags','cms_related_posts',
+            'cms_posts','cms_oauth_users','cms_admin_users','cms_newsletter','cms_contacts',
+            'cms_settings','cms_tags','cms_categories'];
+          foreach ($knownTables as $t) { $mysqli->query("DROP TABLE IF EXISTS `$t`"); }
+          $mysqli->query("SET FOREIGN_KEY_CHECKS=1");
+        }
         // Run schema
         $sql = file_get_contents(__DIR__ . '/schema.sql');
         $sql = preg_replace('/^--.*$/m', '', $sql); // strip full-line comments before splitting
@@ -255,6 +267,12 @@ $dbCfgPrefill = ['host' => 'localhost', 'name' => '', 'user' => '', 'port' => 33
         <input type="password" name="pass" autocomplete="new-password" value="">
         <label>Port</label>
         <input name="port" autocomplete="off" value="<?php echo e($_POST['port'] ?? $dbCfgPrefill['port']); ?>">
+
+        <label style="display:flex;align-items:flex-start;gap:.5rem;margin-top:1.1rem">
+          <input type="checkbox" name="overwrite" value="1" style="width:auto;margin-top:.2rem" <?php echo isset($_POST['overwrite'])?'checked':''; ?>>
+          <span style="font-weight:400">Overwrite existing data - drop and recreate every CyberBlog table in this database before installing. <span style="color:#fda4af">Only check this if you want a completely clean slate; any existing posts, users, comments etc. in this database will be permanently deleted.</span></span>
+        </label>
+
         <button type="submit">Test connection &amp; install schema</button>
       </form>
 

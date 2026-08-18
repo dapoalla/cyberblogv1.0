@@ -39,8 +39,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     <?php foreach ($posts as $post): ?>
     <item>
       <title><?php echo htmlspecialchars($post['title']); ?></title>
-      <link><?php echo htmlspecialchars($siteUrl . base_url('public/post.php?slug=' . $post['slug'])); ?></link>
-      <guid isPermaLink="true"><?php echo htmlspecialchars($siteUrl . base_url('public/post.php?slug=' . $post['slug'])); ?></guid>
+      <link><?php echo htmlspecialchars($siteUrl . base_url('post/'.$post['slug'])); ?></link>
+      <guid isPermaLink="true"><?php echo htmlspecialchars($siteUrl . base_url('post/'.$post['slug'])); ?></guid>
       <pubDate><?php echo date('r', strtotime($post['pub_date'])); ?></pubDate>
       <?php if (!empty($post['category'])): ?>
       <category><?php echo htmlspecialchars($post['category']); ?></category>

@@ -8,11 +8,34 @@ $stmt->bind_param('s',$slug);$stmt->execute();$post=$stmt->get_result()->fetch_a
 if(!$post){ http_response_code(404); echo 'Post not found'; exit; }
 $pageTitle=$post['meta_title']?:$post['title'];
 $metaDescription=$post['meta_description']?:($post['excerpt']?:'');
+$canonicalUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? '') . base_url('post/' . $post['slug']);
+$ogType = 'article';
+$ogImage = $post['og_image'] ?: $post['cover_image'];
+$articleSchema = [
+  '@context' => 'https://schema.org',
+  '@type' => 'BlogPosting',
+  'headline' => $post['title'],
+  'description' => $metaDescription,
+  'datePublished' => date('c', strtotime($post['published_at'] ?: $post['created_at'])),
+  'dateModified' => date('c', strtotime($post['updated_at'] ?: ($post['published_at'] ?: $post['created_at']))),
+  'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonicalUrl],
+];
+if (!empty($post['author_name'])) {
+  $articleSchema['author'] = ['@type' => 'Person', 'name' => $post['author_name']];
+}
 // views++
 $inc=$mysqli->prepare("UPDATE cms_posts SET views=views+1 WHERE id=?"); $inc->bind_param('i',$post['id']); $inc->execute(); $inc->close();
 include __DIR__ . '/../includes/template_header.php';
 ?>
 <article class="max-w-3xl mx-auto">
+  <?php
+    $crumbs = [['label' => 'Home', 'url' => $currentOrigin . base_url('')]];
+    if (!empty($post['category_name'])) {
+      $crumbs[] = ['label' => $post['category_name'], 'url' => $currentOrigin . base_url('category/' . $post['category_slug'])];
+    }
+    $crumbs[] = ['label' => $post['title'], 'url' => null];
+    render_breadcrumbs($crumbs);
+  ?>
   <h1 class="text-3xl font-bold"><?php echo e($post['title']); ?></h1>
   <?php
     $byline = [];
@@ -87,7 +110,7 @@ include __DIR__ . '/../includes/template_header.php';
       <h3 class="text-xl font-semibold mb-4">Related Posts</h3>
       <div class="grid md:grid-cols-3 gap-4">
         <?php foreach ($relatedPosts as $rp): ?>
-          <a href="<?php echo base_url('public/post.php?slug='.e($rp['slug'])); ?>" class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden hover:border-neutral-700 transition">
+          <a href="<?php echo base_url('post/'.e($rp['slug'])); ?>" class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden hover:border-neutral-700 transition">
             <?php if (!empty($rp['cover_image'])): ?>
               <img src="<?php echo e($rp['cover_image']); ?>" alt="<?php echo e($rp['title']); ?>" class="w-full aspect-video object-cover" loading="lazy">
             <?php endif; ?>
@@ -171,7 +194,7 @@ include __DIR__ . '/../includes/template_header.php';
   <div class="mt-6">
     <h3 class="text-lg font-semibold">Add a comment</h3>
     <?php if (empty($_SESSION['pub_user'])): ?>
-      <?php $_SESSION['after_login_redirect'] = base_url('public/post.php?slug='.$post['slug'].'#comments'); ?>
+      <?php $_SESSION['after_login_redirect'] = base_url('post/'.$post['slug'].'#comments'); ?>
       <a class="inline-flex items-center gap-2 mt-3 bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded" href="<?php echo base_url('comments/google_auth.php'); ?>">Sign in with Google to comment</a>
     <?php else: ?>
       <form method="POST" action="<?php echo base_url('comments/add.php'); ?>" class="mt-3">

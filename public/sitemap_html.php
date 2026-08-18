@@ -52,7 +52,7 @@ if ($res = $mysqli->query("SELECT p.id, p.title, p.slug, c.id as cat_id, c.name 
         <h2 class="text-2xl font-semibold mb-4"><?php echo e($cat['name']); ?> (<?php echo $cat['post_count']; ?>)</h2>
         <ul class="space-y-2 text-neutral-300 grid md:grid-cols-2 gap-x-8">
           <?php foreach ($posts_by_category[$cat['id']] as $post): ?>
-            <li><a href="<?php echo base_url('public/post.php?slug='.e($post['slug'])); ?>" class="text-sky-400 hover:underline"><?php echo e($post['title']); ?></a></li>
+            <li><a href="<?php echo base_url('post/'.e($post['slug'])); ?>" class="text-sky-400 hover:underline"><?php echo e($post['title']); ?></a></li>
           <?php endforeach; ?>
         </ul>
       </section>
@@ -64,7 +64,7 @@ if ($res = $mysqli->query("SELECT p.id, p.title, p.slug, c.id as cat_id, c.name 
       <h2 class="text-2xl font-semibold mb-4">Uncategorized</h2>
       <ul class="space-y-2 text-neutral-300 grid md:grid-cols-2 gap-x-8">
         <?php foreach ($posts_by_category[0] as $post): ?>
-          <li><a href="<?php echo base_url('public/post.php?slug='.e($post['slug'])); ?>" class="text-sky-400 hover:underline"><?php echo e($post['title']); ?></a></li>
+          <li><a href="<?php echo base_url('post/'.e($post['slug'])); ?>" class="text-sky-400 hover:underline"><?php echo e($post['title']); ?></a></li>
         <?php endforeach; ?>
       </ul>
     </section>

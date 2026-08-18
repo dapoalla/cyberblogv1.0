@@ -44,8 +44,11 @@ $allCategories=[]; if($res=$mysqli->query("SELECT id,name FROM cms_categories OR
 $pageTitle='Settings'; include __DIR__ . '/../includes/template_header.php';
 include __DIR__ . '/../includes/admin_nav.php';
 
+// Always the current host - the app ignores any redirect_uri saved in
+// config.local.php (see comments/google_auth.php for why: a value pinned
+// to one of www/non-www breaks sign-in for visitors on the other one).
 $oauthScheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' : 'http://';
-$googleRedirectUri = $config['oauth']['redirect_uri'] ?: ($oauthScheme . ($_SERVER['HTTP_HOST'] ?? '') . base_url('comments/google_callback.php'));
+$googleRedirectUri = $oauthScheme . ($_SERVER['HTTP_HOST'] ?? '') . base_url('comments/google_callback.php');
 ?>
 <div class="flex items-center justify-between">
   <h1 class="text-2xl font-bold">Settings</h1>
@@ -116,7 +119,7 @@ $googleRedirectUri = $config['oauth']['redirect_uri'] ?: ($oauthScheme . ($_SERV
 
     <label class="block text-sm mb-1 font-semibold">Authorized redirect URI</label>
     <input type="text" readonly value="<?php echo e($googleRedirectUri); ?>" onclick="this.select()" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2 font-mono text-xs text-neutral-300" />
-    <div class="text-xs text-neutral-400 mt-1">Paste this <strong>exact</strong> value into Google Cloud Console when creating the OAuth client (click the field to select it).</div>
+    <div class="text-xs text-neutral-400 mt-1">Paste this <strong>exact</strong> value into Google Cloud Console when creating the OAuth client (click the field to select it). If your site is reachable at both <code>www.</code> and non-<code>www</code> (or you're not sure which), visit this page from both and add <strong>both</strong> resulting URLs to Google - otherwise visitors on the one you didn't register will get "Invalid state" when signing in.</div>
 
     <label class="block text-sm mb-1 font-semibold mt-4">Google Client ID</label>
     <input name="google_client_id" value="<?php echo e($config['oauth']['client_id'] ?? ''); ?>" placeholder="xxxxx.apps.googleusercontent.com" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2" />

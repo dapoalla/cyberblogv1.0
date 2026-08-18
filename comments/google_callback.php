@@ -12,7 +12,11 @@ if (empty($client_id) || empty($client_secret)) { http_response_code(500); echo 
 if(empty($_GET['state']) || !hash_equals($_SESSION['g_state']??'', (string)$_GET['state'])){ http_response_code(400); echo 'Invalid state'; exit; }
 unset($_SESSION['g_state']);
 $code=$_GET['code']??''; if(!$code){ http_response_code(400); echo 'Missing code'; exit; }
-$redirect = $oauth['redirect_uri'] ?? ((isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']==='on')?'https://':'http://').$_SERVER['HTTP_HOST'].base_url('comments/google_callback.php');
+// Must exactly match what google_auth.php sent Google in the initial
+// request - since this script is only ever reached by Google redirecting
+// back to whatever host that was, recomputing it the same way (current
+// host) always matches, unlike a hardcoded config value.
+$redirect = ((isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']==='on')?'https://':'http://').$_SERVER['HTTP_HOST'].base_url('comments/google_callback.php');
 $post=http_build_query(['code'=>$code,'client_id'=>$client_id,'client_secret'=>$client_secret,'redirect_uri'=>$redirect,'grant_type'=>'authorization_code']);
 $ch=curl_init($token_uri); curl_setopt($ch,CURLOPT_POST,1); curl_setopt($ch,CURLOPT_POSTFIELDS,$post); curl_setopt($ch,CURLOPT_RETURNTRANSFER,1); $res=curl_exec($ch); curl_close($ch);
 $data=json_decode($res,true); $id_token=$data['id_token']??''; if(!$id_token){ http_response_code(500); echo 'No id_token'; exit; }

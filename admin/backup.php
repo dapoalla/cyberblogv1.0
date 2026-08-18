@@ -131,17 +131,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restore']) && csrf_ch
         $error = 'The .zip file does not contain a database.sql - is this a CyberBlog backup?';
       } else {
         if (!is_dir($uploadsDir)) @mkdir($uploadsDir, 0775, true);
+        $uploadsWritable = is_dir($uploadsDir) && is_writable($uploadsDir);
+        $photosExpected = 0;
         for ($i = 0; $i < $zip->numFiles; $i++) {
           $entry = $zip->getNameIndex($i);
           if (strpos($entry, 'uploads/') !== 0) continue;
           $baseName = basename($entry);
           // Guard against zip-slip: only allow a plain filename, no traversal.
           if ($baseName === '' || $baseName === '.' || $baseName === '..' || strpos($entry, '..') !== false) continue;
+          $photosExpected++;
+          if (!$uploadsWritable) continue;
           $data = $zip->getFromIndex($i);
           if ($data === false) continue;
           if (@file_put_contents($uploadsDir . '/' . $baseName, $data) !== false) $photosRestored++;
         }
         $zip->close();
+        if ($photosExpected > 0 && $photosRestored < $photosExpected) {
+          $photosWarning = "Warning: only $photosRestored of $photosExpected photo(s) from the backup could be written to $uploadsDir - "
+            . ($uploadsWritable ? 'some files failed individually (check disk space/permissions).' : 'that folder is not writable by the web server. Fix its permissions (commonly chmod 775) and restore again to get the photos.');
+        }
       }
     } else {
       $sql = file_get_contents($tmpPath);
@@ -155,6 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restore']) && csrf_ch
       [$ok, $errMsg] = cyberblog_run_sql_restore($mysqli, $sql);
       if ($ok) {
         $msg = 'Restore completed successfully.' . ($photosRestored > 0 ? " Restored $photosRestored photo(s)." : '');
+        if (!empty($photosWarning)) { $error = $photosWarning; }
       } else {
         // Note: DROP/CREATE TABLE statements auto-commit in MySQL and cannot be
         // rolled back even inside a transaction - only the row data is protected.

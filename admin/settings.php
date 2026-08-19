@@ -102,14 +102,16 @@ $googleRedirectUri = $oauthScheme . ($_SERVER['HTTP_HOST'] ?? '') . base_url('co
     <h2 class="font-semibold mb-3">Post Editor</h2>
     <label class="block text-sm mb-1 font-semibold">TinyMCE API Key</label>
     <input name="tinymce_api_key" value="<?php echo e($config['tinymce']['api_key'] === 'no-api-key' ? '' : ($config['tinymce']['api_key'] ?? '')); ?>" placeholder="Paste your free TinyMCE API key here" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2" />
+    <?php $tinymceDomain = ($_SERVER['HTTP_HOST'] ?? ''); ?>
+    <div class="text-xs text-amber-400 mt-2">Getting "This domain is not registered"? The key alone isn't enough - you also have to explicitly approve <code><?php echo e($tinymceDomain); ?></code> in your TinyMCE account (see step 3 below). This is the most commonly missed step.</div>
     <details class="mt-2">
       <summary class="cursor-pointer text-sky-400 text-sm">How do I get a free TinyMCE API key?</summary>
       <ol class="text-neutral-400 text-sm leading-6 mt-2 list-decimal list-inside space-y-1">
         <li>Go to <a href="https://www.tiny.cloud/auth/signup/" target="_blank" rel="noopener" class="text-sky-400 hover:underline">tiny.cloud/auth/signup</a> and create a free account (no credit card required).</li>
-        <li>Once signed in, your <strong>API Key</strong> is shown right on your Dashboard.</li>
-        <li>Copy it and paste it above, then save.</li>
+        <li>Once signed in, your <strong>API Key</strong> is shown right on your Dashboard - copy it into the field above and save.</li>
+        <li>On the same Dashboard, find <strong>Approved Domains</strong> and add <code><?php echo e($tinymceDomain); ?></code> exactly (no <code>https://</code>, no trailing slash). This is a separate step from getting the key - skipping it is why the editor shows "domain not registered" even with a valid key.</li>
       </ol>
-      <p class="text-neutral-400 text-sm mt-2">Free tier covers up to 1,000 editor loads/month. Leave this blank and the editor still works, it just shows a small "unregistered domain" notice.</p>
+      <p class="text-neutral-400 text-sm mt-2">Free tier covers up to 1,000 editor loads/month. Leave the key blank and the editor still works, it just shows a small "unregistered domain" notice.</p>
     </details>
   </div>
 

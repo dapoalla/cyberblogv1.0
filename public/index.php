@@ -100,9 +100,9 @@ $hasMore = ($offset + $perPage) < $totalCount;
     <!-- Recent Posts -->
     <div class="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
       <h3 class="text-lg font-semibold mb-4">Recent Posts</h3>
-      <ul class="space-y-2">
+      <ul class="divide-y divide-neutral-800">
         <?php foreach ($recentSidebar as $p): ?>
-          <li>
+          <li class="py-2.5 first:pt-0 last:pb-0 -mx-2 px-2 rounded hover:bg-neutral-800/60 transition-colors">
             <a href="<?php echo base_url('post/'.e($p['slug'])); ?>" class="text-sm hover:text-sky-400 line-clamp-2 block">
               <?php echo e($p['title']); ?>
             </a>
@@ -115,9 +115,9 @@ $hasMore = ($offset + $perPage) < $totalCount;
     <!-- Popular Posts -->
     <div class="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
       <h3 class="text-lg font-semibold mb-4">Popular Posts</h3>
-      <ul class="space-y-2">
+      <ul class="divide-y divide-neutral-800">
         <?php foreach ($popularSidebar as $p): ?>
-          <li>
+          <li class="py-2.5 first:pt-0 last:pb-0 -mx-2 px-2 rounded hover:bg-neutral-800/60 transition-colors">
             <a href="<?php echo base_url('post/'.e($p['slug'])); ?>" class="text-sm hover:text-sky-400 line-clamp-2 block">
               <?php echo e($p['title']); ?>
             </a>

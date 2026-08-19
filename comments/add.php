@@ -7,5 +7,7 @@ $pid=(int)($_POST['post_id']??0); $content=trim($_POST['content']??''); $slug=$_
 if($pid<=0 || $content===''){ http_response_code(400); echo 'Missing fields'; exit; }
 if(empty($_SESSION['pub_user'])){ $_SESSION['after_login_redirect']=base_url('post/'.$slug); header('Location: '.base_url('comments/google_auth.php')); exit; }
 $uid=(int)$_SESSION['pub_user']['id'];
-$stmt=$mysqli->prepare("INSERT INTO cms_comments (post_id,oauth_user_id,content) VALUES (?,?,?)"); $stmt->bind_param('iis',$pid,$uid,$content); $stmt->execute(); $stmt->close();
+// Explicit status - don't rely on the column's DEFAULT, which can differ
+// on databases created before this app defined the schema itself.
+$stmt=$mysqli->prepare("INSERT INTO cms_comments (post_id,oauth_user_id,content,status) VALUES (?,?,?,'pending')"); $stmt->bind_param('iis',$pid,$uid,$content); $stmt->execute(); $stmt->close();
 header('Location: '.base_url('post/'.$slug).'#comments'); exit;

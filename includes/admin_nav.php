@@ -31,13 +31,16 @@ if (empty($_SESSION['admin'])) {
         </a>
       <?php endif; ?>
     </div>
-    <div class="text-sm text-neutral-400">
-      <?php echo e($_SESSION['admin']['username'] ?? 'Admin'); ?>
-      <?php if (!empty($_SESSION['admin']['role'])): ?>
-        <span class="ml-2 px-2 py-0.5 rounded text-xs bg-neutral-800 text-neutral-300">
-          <?php echo e(ucfirst(str_replace('_', ' ', $_SESSION['admin']['role']))); ?>
-        </span>
-      <?php endif; ?>
+    <div class="text-sm text-neutral-400 flex items-center gap-3">
+      <span>
+        <?php echo e($_SESSION['admin']['username'] ?? 'Admin'); ?>
+        <?php if (!empty($_SESSION['admin']['role'])): ?>
+          <span class="ml-2 px-2 py-0.5 rounded text-xs bg-neutral-800 text-neutral-300">
+            <?php echo e(ucfirst(str_replace('_', ' ', $_SESSION['admin']['role']))); ?>
+          </span>
+        <?php endif; ?>
+      </span>
+      <a href="<?php echo base_url('admin/change_password.php'); ?>" class="hover:text-sky-400" title="Change your password">Change Password</a>
     </div>
   </div>
 </div>

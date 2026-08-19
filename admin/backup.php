@@ -75,6 +75,15 @@ if (isset($_GET['action']) && $_GET['action'] === 'download' && isset($_GET['csr
   $zip = new ZipArchive();
   $zip->open($tmpZip, ZipArchive::OVERWRITE);
   $zip->addFromString('database.sql', cyberblog_build_sql_dump($mysqli, $tables));
+  // TinyMCE key + Google OAuth client id/secret live in config.local.php, not
+  // the database, so they'd otherwise be missing from every restore. DB
+  // credentials are deliberately excluded - those are deployment-specific
+  // and restoring them onto a different host would break the connection.
+  $zip->addFromString('credentials.json', json_encode([
+    'tinymce_api_key' => $config['tinymce']['api_key'] ?? '',
+    'google_client_id' => $config['oauth']['client_id'] ?? '',
+    'google_client_secret' => $config['oauth']['client_secret'] ?? '',
+  ], JSON_PRETTY_PRINT));
   if (is_dir($uploadsDir)) {
     foreach (scandir($uploadsDir) as $f) {
       if ($f === '.' || $f === '..') continue;
@@ -122,6 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restore']) && csrf_ch
     $isZip = strtolower(pathinfo($origName, PATHINFO_EXTENSION)) === 'zip';
     $sql = null;
     $photosRestored = 0;
+    $credsWarning = '';
+    $credsRestored = false;
 
     if ($isZip) {
       $zip = new ZipArchive();
@@ -130,6 +141,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restore']) && csrf_ch
       } elseif (($sql = $zip->getFromName('database.sql')) === false) {
         $error = 'The .zip file does not contain a database.sql - is this a CyberBlog backup?';
       } else {
+        $credsJson = $zip->getFromName('credentials.json');
+        if ($credsJson !== false) {
+          $creds = json_decode($credsJson, true);
+          if (is_array($creds) && (!empty($creds['tinymce_api_key']) || !empty($creds['google_client_id']) || !empty($creds['google_client_secret']))) {
+            $configLocalPath = __DIR__ . '/../config.local.php';
+            $existingLocal = file_exists($configLocalPath) ? (require $configLocalPath) : [];
+            $newLocal = array_replace_recursive($existingLocal, [
+              'tinymce' => ['api_key' => $creds['tinymce_api_key'] ?? ''],
+              'oauth' => ['client_id' => $creds['google_client_id'] ?? '', 'client_secret' => $creds['google_client_secret'] ?? ''],
+            ]);
+            if (file_exists($configLocalPath) && !is_writable($configLocalPath)) {
+              $credsWarning = 'The TinyMCE/Google credentials in this backup could NOT be restored - config.local.php is not writable by the web server. Fix its permissions and restore again, or re-enter them in Settings.';
+            } else {
+              $php = "<?php\n// Real credentials for this environment. NEVER commit this file.\nreturn " . var_export($newLocal, true) . ";\n";
+              if (@file_put_contents($configLocalPath, $php) === false) {
+                $credsWarning = 'The TinyMCE/Google credentials in this backup could NOT be restored - config.local.php could not be written (permission denied). Re-enter them in Settings instead.';
+              } else {
+                $credsRestored = true;
+              }
+            }
+          }
+        }
         if (!is_dir($uploadsDir)) @mkdir($uploadsDir, 0775, true);
         $uploadsWritable = is_dir($uploadsDir) && is_writable($uploadsDir);
         $photosExpected = 0;
@@ -162,8 +195,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restore']) && csrf_ch
     } else {
       [$ok, $errMsg] = cyberblog_run_sql_restore($mysqli, $sql);
       if ($ok) {
-        $msg = 'Restore completed successfully.' . ($photosRestored > 0 ? " Restored $photosRestored photo(s)." : '');
-        if (!empty($photosWarning)) { $error = $photosWarning; }
+        $msg = 'Restore completed successfully.'
+          . ($photosRestored > 0 ? " Restored $photosRestored photo(s)." : '')
+          . ($credsRestored ? ' Restored TinyMCE/Google credentials.' : '');
+        $warnings = array_filter([$photosWarning ?? '', $credsWarning]);
+        if ($warnings) { $error = implode(' ', $warnings); }
       } else {
         // Note: DROP/CREATE TABLE statements auto-commit in MySQL and cannot be
         // rolled back even inside a transaction - only the row data is protected.
@@ -186,7 +222,7 @@ include __DIR__ . '/../includes/admin_nav.php';
 
 <div class="mt-6 bg-neutral-900 border border-neutral-800 rounded-lg p-6">
   <h2 class="text-lg font-semibold mb-2">Download Backup</h2>
-  <p class="text-sm text-neutral-400 mb-4">Exports every table (posts, categories, users, comments, settings, etc.) plus everything in <code>/uploads</code> as a single <code>.zip</code> file. Works on any host - no shell access required.</p>
+  <p class="text-sm text-neutral-400 mb-4">Exports every table (posts, categories, users, comments, settings, etc.), everything in <code>/uploads</code>, and your TinyMCE API key + Google Client ID/Secret, as a single <code>.zip</code> file. Works on any host - no shell access required. (Database credentials and the Google redirect URI are never included - the redirect URI is always computed from the domain you're on, and DB credentials are specific to each hosting account.)</p>
   <a href="?action=download&csrf=<?php echo urlencode(csrf_token()); ?>" class="inline-block bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded">Download .zip backup</a>
 </div>
 

@@ -24,6 +24,21 @@ function base_url(string $path = ''): string {
   return ($base ? $base.'/' : '/').$path;
 }
 function e($s) { return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
+// Resolves a stored image reference (cover_image, og_image, profile_image)
+// to a URL that works on THIS deployment, regardless of how/where it was
+// stored. Backups move the raw DB value between installs that can live at
+// different domains or subfolders (or none at all) - an absolute path
+// baked in on one install is frequently wrong on another. External URLs
+// are left untouched; anything else is reduced to its filename and
+// re-resolved fresh via base_url(), which is self-correcting for wherever
+// this particular request is actually running.
+function upload_url(?string $path): string {
+  if (empty($path)) return '';
+  if (preg_match('~^(https?:)?//~i', $path)) return $path;
+  $filename = basename(parse_url($path, PHP_URL_PATH) ?: $path);
+  if ($filename === '' || $filename === '.' || $filename === '..') return '';
+  return base_url('uploads/' . $filename);
+}
 function slugify(string $t): string {
   $t = strtolower($t);
   $t = preg_replace('~[^a-z0-9_\-]+~','-', $t);

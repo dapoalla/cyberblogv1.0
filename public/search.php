@@ -79,7 +79,7 @@ include __DIR__ . '/../includes/template_header.php';
         <?php foreach ($posts as $p): ?>
           <article class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
             <?php if (!empty($p['cover_image'])): ?>
-              <a href="<?php echo base_url('post/'.e($p['slug'])); ?>"><img src="<?php echo e($p['cover_image']); ?>" alt="<?php echo e($p['title']); ?>" class="w-full aspect-video object-cover" loading="lazy"></a>
+              <a href="<?php echo base_url('post/'.e($p['slug'])); ?>"><img src="<?php echo e(upload_url($p['cover_image'])); ?>" alt="<?php echo e($p['title']); ?>" class="w-full aspect-video object-cover" loading="lazy"></a>
             <?php endif; ?>
             <div class="p-6">
               <h3 class="text-xl font-semibold"><a class="hover:text-sky-400" href="<?php echo base_url('post/'.e($p['slug'])); ?>"><?php echo e($p['title']); ?></a></h3>

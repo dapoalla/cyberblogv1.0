@@ -45,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $fname = 'editor_'.time().'_'.mt_rand(1000,9999).'.'.$ext;
             $dest = $dir . '/' . $fname;
             if (move_uploaded_file($_FILES['profile_upload']['tmp_name'], $dest)) {
-              $profile_image = base_url('uploads/'.$fname);
+              // Store just the filename - see upload_url() in helpers.php.
+              $profile_image = $fname;
             }
           }
         }
@@ -166,7 +167,7 @@ include __DIR__ . '/../includes/admin_nav.php';
         <div class="flex items-start justify-between">
           <div class="flex gap-4 flex-1">
             <?php if (!empty($user['profile_image'])): ?>
-              <img src="<?php echo e($user['profile_image']); ?>" alt="" class="w-16 h-16 rounded-full object-cover">
+              <img src="<?php echo e(upload_url($user['profile_image'])); ?>" alt="" class="w-16 h-16 rounded-full object-cover">
             <?php else: ?>
               <div class="w-16 h-16 rounded-full bg-neutral-800 flex items-center justify-center text-2xl font-bold">
                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>

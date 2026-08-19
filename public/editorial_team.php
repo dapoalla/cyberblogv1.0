@@ -30,7 +30,7 @@ include __DIR__ . '/../includes/template_header.php';
     <div class="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
       <div class="flex gap-4">
         <?php if (!empty($member['profile_image'])): ?>
-          <img src="<?php echo e($member['profile_image']); ?>" alt="<?php echo e($member['display_name'] ?: $member['username']); ?>" class="w-20 h-20 rounded-full object-cover">
+          <img src="<?php echo e(upload_url($member['profile_image'])); ?>" alt="<?php echo e($member['display_name'] ?: $member['username']); ?>" class="w-20 h-20 rounded-full object-cover">
         <?php else: ?>
           <div class="w-20 h-20 rounded-full bg-neutral-800 flex items-center justify-center text-3xl font-bold">
             <?php echo strtoupper(substr($member['display_name'] ?: $member['username'], 0, 1)); ?>

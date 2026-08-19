@@ -76,7 +76,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && csrf_check($_POST['csrf']??'')) {
       $fname = 'cover_'.time().'_'.mt_rand(1000,9999).'.'.$ext;
       $dest = $dir.'/'.$fname;
       if (move_uploaded_file($_FILES['cover_upload']['tmp_name'],$dest)) {
-        $post['cover_image'] = base_url('uploads/'.$fname);
+        // Store just the filename, not a deployment-specific absolute path -
+        // rendering resolves it fresh via upload_url() wherever this ends up.
+        $post['cover_image'] = $fname;
       }
     }
   }

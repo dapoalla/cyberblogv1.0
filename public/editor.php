@@ -35,7 +35,7 @@ include __DIR__ . '/../includes/template_header.php';
 <h1 class="text-3xl font-bold">Editor</h1>
 <div class="mt-4 flex items-start gap-4">
   <?php if (!empty($editor['profile_image'])): ?>
-    <img src="<?php echo e($editor['profile_image']); ?>" alt="<?php echo e($editor['display_name']); ?>" class="w-20 h-20 rounded-full object-cover" />
+    <img src="<?php echo e(upload_url($editor['profile_image'])); ?>" alt="<?php echo e($editor['display_name']); ?>" class="w-20 h-20 rounded-full object-cover" />
   <?php else: ?>
     <div class="w-20 h-20 rounded-full bg-neutral-800 flex items-center justify-center text-2xl font-bold">
       <?php echo strtoupper(substr($editor['display_name'] ?: $editor['username'], 0, 1)); ?>
@@ -61,7 +61,7 @@ include __DIR__ . '/../includes/template_header.php';
         <article class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
           <?php if (!empty($p['cover_image'])): ?>
             <a href="<?php echo base_url('post/'.e($p['slug'])); ?>">
-              <img class="w-full aspect-video object-cover" src="<?php echo e($p['cover_image']); ?>" alt="<?php echo e($p['title']); ?>" loading="lazy" />
+              <img class="w-full aspect-video object-cover" src="<?php echo e(upload_url($p['cover_image'])); ?>" alt="<?php echo e($p['title']); ?>" loading="lazy" />
             </a>
           <?php endif; ?>
           <div class="p-6">

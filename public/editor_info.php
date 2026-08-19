@@ -22,7 +22,7 @@ if ($row = $res->fetch_assoc()) {
     'username' => $row['username'],
     'display_name' => $row['display_name'],
     'bio' => $row['bio'],
-    'profile_image' => $row['profile_image'],
+    'profile_image' => upload_url($row['profile_image']),
     'role' => $row['role'],
     'joined' => $row['created_at'],
     'profile_url' => base_url('public/editor.php?u=' . urlencode($row['username']))

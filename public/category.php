@@ -20,7 +20,7 @@ $q->bind_param('i',$cat['id']);$q->execute();$r=$q->get_result(); while($row=$r-
 <div class="mt-6 grid gap-6 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
 <?php foreach($posts as $p): ?>
   <article class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
-    <?php if(!empty($p['cover_image'])): ?><a href="<?php echo base_url('post/'.e($p['slug']));?>"><img class="w-full aspect-video object-cover" src="<?php echo e($p['cover_image']); ?>" alt=""></a><?php endif; ?>
+    <?php if(!empty($p['cover_image'])): ?><a href="<?php echo base_url('post/'.e($p['slug']));?>"><img class="w-full aspect-video object-cover" src="<?php echo e(upload_url($p['cover_image'])); ?>" alt=""></a><?php endif; ?>
     <div class="p-6">
       <h3 class="text-xl font-semibold"><a class="hover:text-sky-400" href="<?php echo base_url('post/'.e($p['slug']));?>"><?php echo e($p['title']); ?></a></h3>
       <?php if(!empty($p['excerpt'])): ?><p class="text-neutral-300 mt-3"><?php echo e($p['excerpt']); ?></p><?php endif; ?>

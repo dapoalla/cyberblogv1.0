@@ -11,7 +11,7 @@ $pageTitle=$post['meta_title']?:$post['title'];
 $metaDescription=$post['meta_description']?:($post['excerpt']?:'');
 $canonicalUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? '') . base_url('post/' . $post['slug']);
 $ogType = 'article';
-$ogImage = $post['og_image'] ?: $post['cover_image'];
+$ogImage = upload_url($post['og_image'] ?: $post['cover_image']);
 $articleSchema = [
   '@context' => 'https://schema.org',
   '@type' => 'BlogPosting',
@@ -56,7 +56,7 @@ include __DIR__ . '/../includes/template_header.php';
       <?php echo implode(' · ', $byline); ?>
     </div>
   <?php endif; ?>
-  <?php if(!empty($post['cover_image'])): ?><img class="mt-6 rounded" src="<?php echo e($post['cover_image']); ?>" alt="<?php echo e($post['title']); ?>" loading="lazy"><?php endif; ?>
+  <?php if(!empty($post['cover_image'])): ?><img class="mt-6 rounded" src="<?php echo e(upload_url($post['cover_image'])); ?>" alt="<?php echo e($post['title']); ?>" loading="lazy"><?php endif; ?>
   <?php if(!empty($post['excerpt'])): ?><p class="text-neutral-300 mt-6"><?php echo e($post['excerpt']); ?></p><?php endif; ?>
   
   <div id="editorPop" class="hidden fixed z-50 w-80 bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg p-4"></div>
@@ -114,7 +114,7 @@ include __DIR__ . '/../includes/template_header.php';
         <?php foreach ($relatedPosts as $rp): ?>
           <a href="<?php echo base_url('post/'.e($rp['slug'])); ?>" class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden hover:border-neutral-700 transition">
             <?php if (!empty($rp['cover_image'])): ?>
-              <img src="<?php echo e($rp['cover_image']); ?>" alt="<?php echo e($rp['title']); ?>" class="w-full aspect-video object-cover" loading="lazy">
+              <img src="<?php echo e(upload_url($rp['cover_image'])); ?>" alt="<?php echo e($rp['title']); ?>" class="w-full aspect-video object-cover" loading="lazy">
             <?php endif; ?>
             <div class="p-4">
               <h4 class="text-sm font-semibold hover:text-sky-400"><?php echo e($rp['title']); ?></h4>

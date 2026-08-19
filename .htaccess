@@ -5,6 +5,7 @@ RewriteRule ^category/([A-Za-z0-9_\-]+)/?$ public/category.php?slug=$1 [L,QSA]
 # Sitemap
 RewriteRule ^sitemap\.xml$ public/sitemap.php [L,QSA]
 RewriteRule ^robots\.txt$ public/robots.php [L,QSA]
+RewriteRule ^ads\.txt$ public/ads.php [L,QSA]
 # Home
 DirectoryIndex public/index.php
 

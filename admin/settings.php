@@ -12,8 +12,9 @@ if($_SERVER['REQUEST_METHOD']==='POST' && csrf_check($_POST['csrf']??'')){
   $footerText = trim((string)($_POST['footer_text']??''));
   $aboutHtml = (string)($_POST['about_content_html']??'');
   $navCategoryIds = isset($_POST['nav_categories']) ? implode(',', array_filter(array_map('intval', $_POST['nav_categories']))) : '';
-  $stmt=$mysqli->prepare("UPDATE cms_settings SET ads_header_code=?, ads_inpost_code=?, ads_midcontent_code=?, site_name=?, site_tagline=?, footer_text=?, about_content_html=?, nav_category_ids=? WHERE id=1");
-  if($stmt){$stmt->bind_param('ssssssss',$header,$inpost,$midcontent,$siteName,$siteTagline,$footerText,$aboutHtml,$navCategoryIds);$stmt->execute();$stmt->close();$msg='Settings saved.';}
+  $adsensePubId = trim((string)($_POST['adsense_publisher_id']??''));
+  $stmt=$mysqli->prepare("UPDATE cms_settings SET ads_header_code=?, ads_inpost_code=?, ads_midcontent_code=?, site_name=?, site_tagline=?, footer_text=?, about_content_html=?, nav_category_ids=?, adsense_publisher_id=? WHERE id=1");
+  if($stmt){$stmt->bind_param('sssssssss',$header,$inpost,$midcontent,$siteName,$siteTagline,$footerText,$aboutHtml,$navCategoryIds,$adsensePubId);$stmt->execute();$stmt->close();$msg='Settings saved.';}
 
   $tinymceKey = trim((string)($_POST['tinymce_api_key']??''));
   $googleClientId = trim((string)($_POST['google_client_id']??''));
@@ -37,7 +38,7 @@ if($_SERVER['REQUEST_METHOD']==='POST' && csrf_check($_POST['csrf']??'')){
     }
   }
 }
-$set=['ads_header_code'=>'','ads_inpost_code'=>'','ads_midcontent_code'=>'','site_name'=>'','site_tagline'=>'','footer_text'=>'','about_content_html'=>'','nav_category_ids'=>''];
+$set=['ads_header_code'=>'','ads_inpost_code'=>'','ads_midcontent_code'=>'','site_name'=>'','site_tagline'=>'','footer_text'=>'','about_content_html'=>'','nav_category_ids'=>'','adsense_publisher_id'=>''];
 if($res=$mysqli->query("SELECT * FROM cms_settings WHERE id=1")){$set=array_merge($set, $res->fetch_assoc()?:[]);}
 $selectedNavCats = array_filter(explode(',', (string)$set['nav_category_ids']));
 $allCategories=[]; if($res=$mysqli->query("SELECT id,name FROM cms_categories ORDER BY name")){ while($r=$res->fetch_assoc()) $allCategories[]=$r; }
@@ -139,6 +140,28 @@ $googleRedirectUri = $oauthScheme . ($_SERVER['HTTP_HOST'] ?? '') . base_url('co
         <li>Click Create, then copy the <strong>Client ID</strong> and <strong>Client secret</strong> into the fields above and save.</li>
       </ol>
       <p class="text-neutral-400 text-sm mt-2">Until this is configured, the "Sign in with Google" comment button will show an error instead of working - everything else on the site is unaffected.</p>
+    </details>
+  </div>
+
+  <div class="bg-neutral-900 border border-neutral-800 rounded-lg p-4">
+    <h2 class="font-semibold mb-3">Google AdSense</h2>
+    <div>
+      <label class="block text-sm mb-1 font-semibold">AdSense Publisher ID</label>
+      <input name="adsense_publisher_id" value="<?php echo e($set['adsense_publisher_id']); ?>" placeholder="pub-XXXXXXXXXXXXXXXX" class="w-full rounded-md bg-neutral-950 border border-neutral-800 px-3 py-2 font-mono text-sm" />
+      <div class="text-xs text-neutral-400 mt-1">The "pub-..." ID from your AdSense account (Account &gt; Settings &gt; Account information). This is different from your numeric "Customer ID" - only the pub- ID goes here.</div>
+    </div>
+    <?php $adsTxtUrl = $oauthScheme . ($_SERVER['HTTP_HOST'] ?? '') . base_url('ads.txt'); ?>
+    <details class="mt-4 bg-neutral-950 border border-neutral-800 rounded-md p-3" <?php echo empty($set['adsense_publisher_id']) ? '' : 'open'; ?>>
+      <summary class="cursor-pointer font-semibold text-sm">How to get AdSense to crawl and approve this site</summary>
+      <ol class="list-decimal list-inside text-sm text-neutral-300 mt-3 space-y-2">
+        <li>Save your Publisher ID above first - this site then auto-serves a required <code>ads.txt</code> file at:
+          <div class="mt-1 font-mono text-xs bg-neutral-900 border border-neutral-800 rounded px-2 py-1 break-all"><?php echo e($adsTxtUrl); ?></div>
+        </li>
+        <li>In your <a href="https://www.google.com/adsense/" target="_blank" rel="noopener" class="text-sky-400 underline">AdSense dashboard</a>, go to <strong>Sites</strong> &gt; <strong>Add site</strong>, and enter this exact subdomain: <code><?php echo e($_SERVER['HTTP_HOST'] ?? ''); ?></code></li>
+        <li>AdSense will check the <code>ads.txt</code> URL above automatically - it can take a few hours to a few days to detect. No manual "allow crawling" step is needed: this app's <code>robots.txt</code> already permits all crawlers on every public page (only <code>/admin/</code> and <code>/install/</code> are blocked, and AdSense's crawler ignores those anyway).</li>
+        <li>Once AdSense shows the site as "Ready", paste your ad unit / auto-ads script into the <strong>Header Ad Code</strong> box below.</li>
+        <li>Note: if <code>cyberrose.com.ng</code> (the root domain, without "blog.") also serves content, it needs its <em>own</em> <code>ads.txt</code> too - this app only controls the <code>blog.</code> subdomain.</li>
+      </ol>
     </details>
   </div>
 
